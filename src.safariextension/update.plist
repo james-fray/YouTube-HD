@@ -6,15 +6,15 @@
    <array>
      <dict>
        <key>CFBundleIdentifier</key>
-       <string>com.add0n.template</string>
+       <string>com.add0n.YouTube-HD</string>
        <key>Developer Identifier</key>
-       <string>ID HERE</string>
+       <string>N36DZ3K24G</string>
        <key>CFBundleVersion</key>
        <string>1</string>
        <key>CFBundleShortVersionString</key>
-       <string>0.1.0</string>
+       <string>0.1.1</string>
        <key>URL</key>
-       <string></string>
+       <string>https://github.com/james-fray/YouTube-HD/blob/master/src.safariextension/executables/extension.safariextz?raw=true</string>
      </dict>
    </array>
 </dict>

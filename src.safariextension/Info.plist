@@ -49,6 +49,8 @@
 			<string>All</string>
 		</dict>
 	</dict>
+	<key>Update Manifest URL</key>
+	<string>https://raw.githubusercontent.com/james-fray/YouTube-HD/master/src.safariextension/update.plist</string>
 	<key>Website</key>
 	<string>http://add0n.com/youtube-hd.html</string>
 </dict>
