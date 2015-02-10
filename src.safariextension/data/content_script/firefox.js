@@ -1,20 +1,28 @@
+function player () {
+  return XPCNativeWrapper.unwrap(document.getElementById('movie_player') || document.getElementById('movie_player-flash'));
+}
+
 function setQuality () {
-  var player = document.getElementById('movie_player') || document.getElementById('movie_player-flash');
-  if (player) {
-    player = XPCNativeWrapper.unwrap (player);
-    //This function is called by YouTube player to report changes in the playing state
-    unsafeWindow.iyhdListener = function (e) {
-      if (e === 1) {
-        var levels = player.getAvailableQualityLevels();
-        player.setPlaybackQuality(levels[0]);
-        //console.error('quality is set to %s', levels[0]);
-      }
+  function iyhListenerChange (e) {
+    if (e === 1) {
+      var _player = player();
+      var levels = _player.getAvailableQualityLevels();
+      _player.setPlaybackQuality(levels[0]);
+      //console.error("YouTube HD::", "Quality is set to", levels[0]);
     }
-    player.addEventListener("onStateChange", "iyhdListener");
   }
-  else {
-    //console.error('player is not found');
+  exportFunction(iyhListenerChange, unsafeWindow, {defineAs: "iyhListenerChange"});
+  function one () {
+    var _player = player();
+    if (_player && _player.addEventListener && _player.getPlayerState) {
+      _player.addEventListener("onStateChange", "iyhListenerChange");
+      iyhListenerChange(1);
+    }
+    else {
+      window.setTimeout(one, 1000);
+    }
   }
+  one();
 }
 
 // Detect Player then call setQuality function

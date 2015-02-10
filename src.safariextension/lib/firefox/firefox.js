@@ -6,10 +6,7 @@ var self          = require("sdk/self"),
     pageMod       = require("sdk/page-mod"),
     tabs          = require("sdk/tabs"),
     timers        = require("sdk/timers"),
-    loader        = require('@loader/options'),
     array         = require('sdk/util/array'),
-    unload        = require("sdk/system/unload"),
-    {Cc, Ci, Cu}  = require('chrome'),
     config        = require("../config");
 
 var workers = [], content_script_arr = [];

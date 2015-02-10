@@ -4,7 +4,7 @@
   "description": "Watch YouTube in the full-HD quality or the highest available one",
   "id": "jid0-RjdrEcWS3Ggt4xydeqVS8WQk1Lu",
   "license": "mozilla public license 1.1",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "James Fray",
   "lib": "lib",
   "main": "common",
@@ -12,7 +12,6 @@
   "icon": "data/icons/32.png",
   "icon64": "data/icons/64.png",
   "permissions": {
-    "unsafe-content-script": true,
     "private-browsing": true
   }
 }

@@ -1,20 +1,28 @@
 function setQuality () {
-  function iyhListener (e) {
+  function iyhListenerChange (e) {
     if (e === 1) {
       var player = document.getElementById('movie_player') || document.getElementById('movie_player-flash');
       var levels = player.getAvailableQualityLevels();
       player.setPlaybackQuality(levels[0]);
-      console.log('quality is set to %s', levels[0]);
+      console.log("YouTube HD::", "Quality is set to", levels[0]);
     }
   }
+
   function inject() {
-    var player = document.getElementById('movie_player') || document.getElementById('movie_player-flash');
-    if (player && player.addEventListener) {
-      player.addEventListener("onStateChange", "iyhListener");
+    function one () {
+      var player = document.getElementById('movie_player') || document.getElementById('movie_player-flash');
+      if (player && player.addEventListener && player.getPlayerState) {
+        player.addEventListener("onStateChange", "iyhListenerChange");
+        iyhListenerChange(1);
+      }
+      else {
+        window.setTimeout(one, 1000);
+      }
     }
+    one();
   }
   var script = document.createElement("script");
-  script.src = "data:text/javascript," + iyhListener + ';(' + inject + ')();';;
+  script.src = "data:text/javascript," + iyhListenerChange + ';(' + inject + ')();';;
   document.body.appendChild(script);
 }
 
