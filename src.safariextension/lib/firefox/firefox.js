@@ -7,13 +7,17 @@ var self          = require("sdk/self"),
     tabs          = require("sdk/tabs"),
     timers        = require("sdk/timers"),
     array         = require('sdk/util/array'),
-    config        = require("../config");
+    loader        = require('@loader/options'),
+    tabs          = require('sdk/tabs'),
+    unload        = require('sdk/system/unload'),
+    config        = require('../config');
 
 var workers = [], content_script_arr = [];
 pageMod.PageMod({
   include: ["*.youtube.com"],
   contentScriptFile: data.url("./content_script/firefox.js"),
   contentScriptWhen: "start",
+  attachTo: ["top"],
   onAttach: function(worker) {
     array.add(workers, worker);
     worker.on('pageshow', function() { array.add(workers, this); });
@@ -27,7 +31,7 @@ pageMod.PageMod({
 
 exports.storage = {
   read: function (id) {
-    return (prefs[id] || prefs[id] + "" == "false") ? (prefs[id] + "") : null;
+    return (prefs[id] || prefs[id] + "" == "false" || !isNaN(prefs[id])) ? (prefs[id] + "") : null;
   },
   write: function (id, data) {
     data = data + "";
@@ -78,3 +82,47 @@ exports.version = function () {
 }
 
 exports.timer = timers;
+
+exports.options = (function () {
+  var workers = [], options_arr = [];
+  pageMod.PageMod({
+    include: data.url('options/index.html'),
+    contentScriptFile: data.url('options/index.js'),
+    contentScriptWhen: 'start',
+    contentScriptOptions: {
+      base: loader.prefixURI + loader.name + '/'
+    },
+    onAttach: function(worker) {
+      array.add(workers, worker);
+      worker.on('pageshow', (w) => array.add(workers, w));
+      worker.on('pagehide', (w) => array.remove(workers, w));
+      worker.on('detach', (w) => array.remove(workers, w));
+
+      options_arr.forEach(function (arr) {
+        worker.port.on(arr[0], arr[1]);
+      });
+    }
+  });
+  return {
+    send: function (id, data) {
+      workers.forEach(function (worker) {
+        if (!worker || !worker.url) {
+          return;
+        }
+        worker.port.emit(id, data);
+      });
+    },
+    receive: (id, callback) => options_arr.push([id, callback])
+  };
+})();
+
+sp.on('openOptions', function() {
+  tabs.open(data.url('options/index.html'));
+});
+unload.when(function () {
+  for each (var tab in tabs) {
+    if (tab.url === data.url('options/index.html')) {
+      tab.close();
+    }
+  }
+});

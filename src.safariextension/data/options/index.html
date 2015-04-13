@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html>
+<head>
+  <title>Options - YouTube HD</title>
+  <meta charset="utf-8" />
+  <link rel="icon" type="image/png" href="../icons/16.png">
+  <link rel="stylesheet" type="text/css" href="index.css">
+  <script type="text/javascript" src="css_browser_selector.js"></script>
+</head>
+<body class="flex">
+  <div id="header" class="flex">
+    <div style="">
+      <span>YouTube HD (HD quality for YouTube™)</span>
+      <br/>
+      <span class="note">Watch YouTube in the full-HD quality or the highest available one</span>
+    </div>
+  </div>
+
+  <div id="content" class="flex">
+    <table width="100%">
+      <tr>
+        <td>Settings</td>
+        <td>
+          <label>
+            <input type="checkbox" data-pref="options.player.hd"> <span>Do not increase video quality if an HD quality (720p, 1080p, 1440p, 2160p, ...) is selected by user or YouTube player</span>.
+          </label>
+          <p class="note">YouTube HD always tries to set the video quality to the highest available one. This might not be your preference if video quality is already acceptable.</p>
+          <p class="spacer"></p>
+          <div class="box">
+              <label>What is your preferred HD quality?</label>
+              <select data-pref="options.player.quality">
+                <option>720p</option>
+                <option>1080p</option>
+                <option>1440p</option>
+                <option>2160p</option>
+                <option>Highest available one</option>
+              </select>
+          </div>
+          <p class="note">YouTube HD always selects the highest available quality if your preferred one is not available.</p>
+        </td>
+      </tr>
+      <tr>
+        <td>Misc</td>
+        <td>
+          <label>
+            <input type="checkbox" data-pref="options.welcome"> <span>Open welcome page on upgrade</span>.
+          </label>
+          <p class="note">YouTube HD opens the welcome page on each upgrade to notify users about their recent update. If this is not your preferred behavior you can disable it.</p>
+          <p class="spacer"></p>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <script type='text/javascript' src="shadow_index.js"></script>
+</body>
+</html>

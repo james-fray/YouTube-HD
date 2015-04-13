@@ -49,3 +49,22 @@ app.version = function () {
 }
 
 app.timer = window;
+
+app.options = {
+  send: function (id, data) {
+    chrome.tabs.query({}, function (tabs) {
+      tabs.forEach(function (tab) {
+        if (tab.url.indexOf(chrome.extension.getURL('data/options/index.html') === 0)) {
+          chrome.tabs.sendMessage(tab.id, {method: id, data: data}, function () {});
+        }
+      });
+    });
+  },
+  receive: function (id, callback) {
+    chrome.extension.onRequest.addListener(function (request, sender) {
+      if (request.method === id && sender.tab && sender.tab.url.indexOf(chrome.extension.getURL('data/options/index.html') === 0)) {
+        callback(request.data);
+      }
+    });
+  }
+};

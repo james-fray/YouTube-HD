@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>James Fray</string>
 	<key>Builder Version</key>
-	<string>10600.3.18</string>
+	<string>10600.4.10.7</string>
 	<key>CFBundleDisplayName</key>
 	<string>HD quality for YouTube™</string>
 	<key>CFBundleIdentifier</key>
@@ -13,9 +13,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.1.2</string>
+	<string>0.1.5</string>
 	<key>CFBundleVersion</key>
-	<string>2</string>
+	<string>3</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Database Quota</key>
@@ -36,7 +36,7 @@
 	<key>Description</key>
 	<string>High definition quality for YouTube HTML5 and Flash players</string>
 	<key>DeveloperIdentifier</key>
-	<string>2C3W8RZ8ND</string>
+	<string>N36DZ3K24G</string>
 	<key>ExtensionInfoDictionaryVersion</key>
 	<string>1.0</string>
 	<key>Permissions</key>

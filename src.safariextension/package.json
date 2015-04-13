@@ -4,7 +4,7 @@
   "description": "Watch YouTube in the full-HD quality or the highest available one",
   "id": "jid0-RjdrEcWS3Ggt4xydeqVS8WQk1Lu",
   "license": "mozilla public license 1.1",
-  "version": "0.1.2",
+  "version": "0.1.5",
   "author": "James Fray",
   "lib": "lib",
   "main": "common",
@@ -13,5 +13,12 @@
   "icon64": "data/icons/64.png",
   "permissions": {
     "private-browsing": true
-  }
+  },
+  "preferences": [{
+    "name": "openOptions",
+    "title": "Open Options",
+    "label": "Options",
+    "type": "control",
+    "value": "this is the default string value"
+  }]
 }

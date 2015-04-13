@@ -1,3 +1,5 @@
+var hd = true, quality = '-1';
+
 function player () {
   return XPCNativeWrapper.unwrap(document.getElementById('movie_player') || document.getElementById('movie_player-flash'));
 }
@@ -7,8 +9,14 @@ function setQuality () {
     if (e === 1) {
       var _player = player();
       var levels = _player.getAvailableQualityLevels();
-      _player.setPlaybackQuality(levels[0]);
-      //console.error("YouTube HD::", "Quality is set to", levels[0]);
+      var q = _player.getPlaybackQuality();
+      if (q.indexOf("hd") !== -1 && hd) {
+        console.error("Quality was", q, 'Changing quality is skipped');
+        return;
+      }
+      var tmp = quality === '-1' || levels.indexOf(quality) === -1 ? levels[0] : quality;
+      _player.setPlaybackQuality(tmp);
+      console.error("YouTube HD::", "Quality was", q, "Quality is set to", tmp);
     }
   }
   exportFunction(iyhListenerChange, unsafeWindow, {defineAs: "iyhListenerChange"});
@@ -25,36 +33,41 @@ function setQuality () {
   one();
 }
 
-// Detect Player then call setQuality function
-if (window.top === window) {
-  window.addEventListener('DOMContentLoaded', function () {
-    var pagecontainer = document.getElementById('page-container');
-    if (!pagecontainer) return;
+window.addEventListener('DOMContentLoaded', function () {
+  var pagecontainer = document.getElementById('page-container');
+  if (!pagecontainer) return;
 
-    if (/^https?:\/\/www\.youtube.com\/watch\?/.test(window.location.href)) setQuality();
+  if (/^https?:\/\/www\.youtube.com\/watch\?/.test(window.location.href)) {
+    setQuality();
+  }
 
-    var isAjax = /class[\w\s"'-=]+spf\-link/.test(pagecontainer.innerHTML);
-    var content = document.getElementById('content');
-    if (isAjax && content) { // Ajax UI
-      var mo = window.MutationObserver;
-      if (typeof mo !== 'undefined') {
-        var observer = new mo(function (mutations) {
-          mutations.forEach(function (mutation) {
-            if (mutation.addedNodes !== null) {
-              for (var i = 0; i < mutation.addedNodes.length; i++) {
-                if (mutation.addedNodes[i].id == 'watch7-container') {
-                  setQuality();
-                  break;
-                }
+  var isAjax = /class[\w\s"'-=]+spf\-link/.test(pagecontainer.innerHTML);
+  var content = document.getElementById('content');
+  if (isAjax && content) { // Ajax UI
+    var mo = window.MutationObserver;
+    if (typeof mo !== 'undefined') {
+      var observer = new mo(function (mutations) {
+        mutations.forEach(function (mutation) {
+          if (mutation.addedNodes !== null) {
+            for (var i = 0; i < mutation.addedNodes.length; i++) {
+              if (mutation.addedNodes[i].id == 'watch7-container') {
+                setQuality();
+                break;
               }
             }
-          });
+          }
         });
-        observer.observe(content, {
-          childList: true,
-          subtree: true
-        });
-      }
+      });
+      observer.observe(content, {
+        childList: true,
+        subtree: true
+      });
     }
-  }, false);
-}
+  }
+}, false);
+
+self.port.on('options', function (obj) {
+  hd = obj.hd;
+  quality = ["hd720", "hd1080", "hd1440", "hd2160", "-1"][parseInt(obj.quality)];
+});
+self.port.emit('options');

@@ -54,3 +54,26 @@ app.content_script = (function () {
     }
   }
 })();
+
+app.options = (function () {
+  var callbacks = {};
+  safari.application.addEventListener('message', function (e) {
+    if (callbacks[e.message.id]) {
+      callbacks[e.message.id](e.message.data);
+    }
+  }, false);
+  return {
+    send: function (id, data) {
+      safari.application.browserWindows.forEach(function (browserWindow) {
+        browserWindow.tabs.forEach(function (tab) {
+          if (tab.page && tab.url.indexOf(safari.extension.baseURI + 'data/options/index.html') === 0) {
+            tab.page.dispatchMessage(id, data);
+          }
+        });
+      });
+    },
+    receive: function (id, callback) {
+      callbacks[id] = callback;
+    }
+  };
+})();

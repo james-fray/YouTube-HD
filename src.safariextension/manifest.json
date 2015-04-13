@@ -1,14 +1,12 @@
 {
-  "name": "HD quality for YouTube™",
+  "name": "HD quality for YouTube™ (1080p, 1440p, 2160p)",
   "short_name": "iyutubehd",
   "description": "Watch YouTube in the full-HD quality or the highest available one",
   "author": "James Fray",
-  "version": "0.1.1",
+  "version": "0.1.5",
   "manifest_version": 2,
   "permissions": [
-    "storage",
     "tabs",
-    "notifications",
     "background"
   ],
   "web_accessible_resources": [],
@@ -22,6 +20,7 @@
     "all_frames": false
   }],
   "homepage_url": "http://add0n.com/youtube-hd.html",
+  "options_page": "data/options/index.html",
   "icons": {
     "16": "data/icons/16.png",
     "48": "data/icons/48.png",
