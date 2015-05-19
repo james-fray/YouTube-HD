@@ -1,13 +1,16 @@
-var app = {}
+/* globals safari */
+'use strict';
+
+var app = {};
 
 app.storage = {
   read: function (id) {
-    return localStorage[id] || null;
+    return safari.extension.settings[id] || null;
   },
   write: function (id, data) {
-    localStorage[id] = data + "";
+    safari.extension.settings[id] = data + '';
   }
-}
+};
 
 app.tab = {
   open: function (url, inBackground, inCurrent) {
@@ -15,23 +18,23 @@ app.tab = {
       safari.application.activeBrowserWindow.activeTab.url = url;
     }
     else {
-      safari.application.activeBrowserWindow.openTab(inBackground ? "background" : "foreground").url = url;
+      safari.application.activeBrowserWindow.openTab(inBackground ? 'background' : 'foreground').url = url;
     }
   },
   openOptions: function () {
 
   }
-}
+};
 
 app.version = function () {
   return safari.extension.displayVersion;
-}
+};
 
 app.timer = window;
 
 app.content_script = (function () {
   var callbacks = {};
-  safari.application.addEventListener("message", function (e) {
+  safari.application.addEventListener('message', function (e) {
     if (callbacks[e.message.id]) {
       callbacks[e.message.id](e.message.data);
     }
@@ -41,18 +44,23 @@ app.content_script = (function () {
       if (global) {
         safari.application.browserWindows.forEach(function (browserWindow) {
           browserWindow.tabs.forEach(function (tab) {
-            if (tab.page) tab.page.dispatchMessage(id, data);
+            if (tab.page) {
+              tab.page.dispatchMessage(id, data);
+            }
           });
         });
       }
       else {
-        safari.application.activeBrowserWindow.activeTab.page.dispatchMessage(id, data);
+        var page =  safari.application.activeBrowserWindow.activeTab.page;
+        if (page) {
+          page.dispatchMessage(id, data);
+        }
       }
     },
     receive: function (id, callback) {
       callbacks[id] = callback;
     }
-  }
+  };
 })();
 
 app.options = (function () {
