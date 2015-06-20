@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.1.5.1</string>
+	<string>0.1.6</string>
 	<key>CFBundleVersion</key>
 	<string>4</string>
 	<key>Chrome</key>
@@ -22,6 +22,19 @@
 		<real>1048576</real>
 		<key>Global Page</key>
 		<string>lib/safari/background.html</string>
+		<key>Toolbar Items</key>
+		<array>
+			<dict>
+				<key>Identifier</key>
+				<string>hd-settings</string>
+				<key>Image</key>
+				<string>data/icons/256.png</string>
+				<key>Label</key>
+				<string>HD quality for YouTube™ Settings</string>
+				<key>Tool Tip</key>
+				<string>HD quality for YouTube™ Settings Page</string>
+			</dict>
+		</array>
 	</dict>
 	<key>Content</key>
 	<dict>
@@ -36,7 +49,7 @@
 	<key>Description</key>
 	<string>High definition quality for YouTube HTML5 and Flash players</string>
 	<key>DeveloperIdentifier</key>
-	<string>L62F677Y54</string>
+	<string>N36DZ3K24G</string>
 	<key>ExtensionInfoDictionaryVersion</key>
 	<string>1.0</string>
 	<key>Permissions</key>

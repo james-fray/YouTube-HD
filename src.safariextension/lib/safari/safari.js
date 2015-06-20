@@ -70,11 +70,21 @@ app.options = (function () {
       callbacks[e.message.id](e.message.data);
     }
   }, false);
+  safari.application.addEventListener('command', function () {
+    safari.application.browserWindows.forEach(function (win) {
+      win.tabs.forEach(function (tab) {
+        if ((tab.url || '').indexOf(safari.extension.baseURI + 'data/options/index.html') === 0) {
+          tab.close();
+        }
+      });
+    });
+    app.tab.open(safari.extension.baseURI + 'data/options/index.html');
+  }, false);
   return {
     send: function (id, data) {
       safari.application.browserWindows.forEach(function (browserWindow) {
         browserWindow.tabs.forEach(function (tab) {
-          if (tab.page && tab.url.indexOf(safari.extension.baseURI + 'data/options/index.html') === 0) {
+          if (tab.page && (tab.url || '').indexOf(safari.extension.baseURI + 'data/options/index.html') === 0) {
             tab.page.dispatchMessage(id, data);
           }
         });
@@ -85,3 +95,4 @@ app.options = (function () {
     }
   };
 })();
+

@@ -84,13 +84,6 @@ body>* {
   -webkit-justify-content: center;
   color: #fff;
 }
-#header>div>span {
-  padding-left: 105px;
-}
-#header>div:nth-child(1)>span:nth-child(1) {
-  font-size: 140%;
-}
-
 
 table {
   border-collapse: collapse;
@@ -105,4 +98,19 @@ table {
   width: 120px;
   font-weight: bold;
   vertical-align: top;
+}
+
+a {
+  color: #fff;
+  border-bottom: 1px dotted #FFF;
+  text-decoration: none;
+}
+
+.firefox {
+  display: none;
+}
+@-moz-document url-prefix() {
+  .firefox {
+    display: block;
+  }
 }

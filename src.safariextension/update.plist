@@ -12,7 +12,7 @@
        <key>CFBundleVersion</key>
        <string>4</string>
        <key>CFBundleShortVersionString</key>
-       <string>0.1.5.1</string>
+       <string>0.1.6</string>
        <key>URL</key>
        <string>https://github.com/james-fray/YouTube-HD/blob/master/src.safariextension/executables/extension.safariextz?raw=true</string>
      </dict>
