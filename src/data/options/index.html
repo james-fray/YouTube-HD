@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>YouTube HD Options</title>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      padding: 10px;
+      font-family: sans-serif, arial;
+      font-size: 13px;
+    }
+    .note {
+      font-size: 90%;
+      color: rgb(112, 112, 112);
+    }
+  </style>
+</head>
+
+<body>
+  <p>
+    <label><input type="checkbox" id="hd"> Do not change video quality if an HD quality is selected and the preferred quality is also HD</label>
+    <div class="note">YouTube HD always tries to set the video quality based on your settings. This might not be your preference if video quality is already acceptable.</div>
+  </p>
+  <p>
+    What is your preferred HD quality?:
+    <select id="quality">
+      <option value="highest">Highest available quality</option>
+      <option value="hd2160">2160p</option>
+      <option value="hd1440">1440p</option>
+      <option value="hd1080">1080p</option>
+      <option value="hd720">720p</option>
+      <option value="large">large</option>
+      <option value="medium">medium</option>
+      <option value="small">small</option>
+      <option value="tiny">tiny</option>
+      <option value="auto">auto</option>
+    </select>
+  </p>
+  <p>
+    <label><input type="checkbox" id="log"> Display video quality logs in the browser console</label>
+    <div class="note">Use this option for debugging purpose. If enabled, the extension prints the current video quality and whether the quality change is necessary or not (you need to reload YouTube tabs).</div>
+  </p>
+  <p>
+    <label><input type="checkbox" id="faqs"> Open FAQs page on upgrade</label>
+    <div class="note">YouTube HD opens the FAQs page on each upgrade to notify users about their recent update and changes. If this is not your preferred behavior you can disable it.</div>
+  </p>
+  <h2>Note:</h2>
+  <p>
+    Quality change only occurs after in-player-advertisement is displayed or skipped. For faster quality changes skip in-player-advertisement using "YouTube™ Player AdBlocker" add-on: <a href="https://chrome.google.com/webstore/detail/youtube-player-adblocker/kpjdlhnmjhjnbeigfilbaiklikbopbca">Chrome</a>, <a href="https://addons.opera.com/extensions/details/youtubetm-player-adblocker/">Opera</a>, or <a href="https://addons.mozilla.org/firefox/addon/youtube-player-adblocker/">Firefox</a>
+  </p>
+
+  <div>
+    <button id="save">Save</button>
+    <span id="status"></span>
+  </div>
+
+  <script src="index.js"></script>
+</body>
+</html>

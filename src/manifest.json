@@ -3,24 +3,29 @@
   "short_name": "iyutubehd",
   "description": "Watch YouTube in the full-HD quality or the highest available one",
   "author": "James Fray",
-  "version": "0.1.6",
+  "version": "0.2.2",
   "manifest_version": 2,
   "permissions": [
     "tabs",
-    "background"
+    "storage"
   ],
-  "web_accessible_resources": [],
   "background": {
-    "page": "lib/chrome/background.html"
+    "persistent": false,
+    "scripts": [
+      "common.js"
+    ]
   },
   "content_scripts": [{
-    "matches": ["http://www.youtube.com/*", "https://www.youtube.com/*"],
-    "js": ["data/content_script/chrome.js"],
+    "matches": ["*://www.youtube.com/*"],
+    "js": ["data/inject.js"],
     "run_at": "document_start",
     "all_frames": false
   }],
-  "homepage_url": "http://add0n.com/youtube-hd.html",
-  "options_page": "data/options/index.html",
+  "homepage_url": "http://add0n.com/youtube-hd.html?from=context",
+  "options_ui": {
+    "page": "data/options/index.html",
+    "chrome_style": true
+  },
   "icons": {
     "16": "data/icons/16.png",
     "48": "data/icons/48.png",

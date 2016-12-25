@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>DefaultValue</key>
+		<string>true</string>
+		<key>Key</key>
+		<string>hd</string>
+		<key>Title</key>
+		<string>Do not change video quality if an HD quality is selected and the preferred quality is also HD</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<string>highest</string>
+		<key>Key</key>
+		<string>quality</string>
+		<key>Title</key>
+		<string>What is your preferred HD quality:</string>
+		<key>Titles</key>
+		<array>
+			<string>Highest available quality</string>
+			<string>2160p</string>
+			<string>1440p</string>
+			<string>1080p</string>
+			<string>720p</string>
+			<string>large</string>
+			<string>medium</string>
+			<string>small</string>
+			<string>tiny</string>
+			<string>auto</string>
+		</array>
+		<key>Type</key>
+		<string>ListBox</string>
+		<key>Values</key>
+		<array>
+			<string>highest</string>
+			<string>hd2160</string>
+			<string>hd1440</string>
+			<string>hd1080</string>
+			<string>hd720</string>
+			<string>large</string>
+			<string>medium</string>
+			<string>small</string>
+			<string>tiny</string>
+			<string>auto</string>
+		</array>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
+		<string>false</string>
+		<key>Key</key>
+		<string>log</string>
+		<key>Title</key>
+		<string>Display video quality logs in the browser console</string>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+</array>
+</plist>

@@ -5,36 +5,23 @@
 	<key>Author</key>
 	<string>James Fray</string>
 	<key>Builder Version</key>
-	<string>10600.6.3</string>
+	<string>12602.2.14.0.7</string>
 	<key>CFBundleDisplayName</key>
-	<string>HD quality for YouTube™</string>
+	<string>High Definition Quality for YouTube™</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.add0n.youtube-hd</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.1.6</string>
+	<string>0.2.2</string>
 	<key>CFBundleVersion</key>
-	<string>4</string>
+	<string>1</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Database Quota</key>
-		<real>1048576</real>
+		<integer>1048576</integer>
 		<key>Global Page</key>
-		<string>lib/safari/background.html</string>
-		<key>Toolbar Items</key>
-		<array>
-			<dict>
-				<key>Identifier</key>
-				<string>hd-settings</string>
-				<key>Image</key>
-				<string>data/icons/256.png</string>
-				<key>Label</key>
-				<string>HD quality for YouTube™ Settings</string>
-				<key>Tool Tip</key>
-				<string>HD quality for YouTube™ Settings Page</string>
-			</dict>
-		</array>
+		<string>background.html</string>
 	</dict>
 	<key>Content</key>
 	<dict>
@@ -42,29 +29,32 @@
 		<dict>
 			<key>Start</key>
 			<array>
-				<string>data/content_script/chrome.js</string>
+				<string>data/chrome.js</string>
+				<string>data/inject.js</string>
 			</array>
 		</dict>
 	</dict>
 	<key>Description</key>
-	<string>High definition quality for YouTube HTML5 and Flash players</string>
+	<string>Watch YouTube in the full-HD quality or the highest available one</string>
 	<key>DeveloperIdentifier</key>
-	<string>N36DZ3K24G</string>
+	<string>RED8XKG2R4</string>
 	<key>ExtensionInfoDictionaryVersion</key>
 	<string>1.0</string>
 	<key>Permissions</key>
 	<dict>
 		<key>Website Access</key>
 		<dict>
+			<key>Allowed Domains</key>
+			<array>
+				<string>www.youtube.com</string>
+			</array>
 			<key>Include Secure Pages</key>
 			<true/>
 			<key>Level</key>
-			<string>All</string>
+			<string>Some</string>
 		</dict>
 	</dict>
-	<key>Update Manifest URL</key>
-	<string>https://raw.githubusercontent.com/james-fray/YouTube-HD/master/src.safariextension/update.plist</string>
 	<key>Website</key>
-	<string>http://add0n.com/youtube-hd.html</string>
+	<string>http://add0n.com/youtube-hd.html?from=context</string>
 </dict>
 </plist>
