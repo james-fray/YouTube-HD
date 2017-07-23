@@ -6,37 +6,39 @@ script.textContent = `
   var sfeerf = {
     hd: true,
     quality: 0,
-    log: false
+    log: false,
+    player: null
   };
 
-  function iyhListenerChange (e) {
+  function iyhListenerChange(e) {
     try {
       if (e === 1) {
-        let player = document.getElementById('movie_player') || document.getElementById('movie_player-flash');
+        const player = sfeerf.player ||
+          document.getElementById('movie_player') ||
+          document.getElementById('movie_player-flash');
         if (player) {
-          let levels = player.getAvailableQualityLevels();
+          const levels = player.getAvailableQualityLevels();
           if (levels.length === 0) {
             if (sfeerf.log) {
-              console.error('YouTube HD::', 'getAvailableQualityLevels returned empty array');
+              console.log('YouTube HD::', 'getAvailableQualityLevels returned empty array');
             }
             return;
           }
-          let q = player.getPlaybackQuality();
+          const q = player.getPlaybackQuality();
           if ((q.startsWith('h') && sfeerf.quality.startsWith('h')) && sfeerf.hd) {
             if (sfeerf.log) {
-              console.error('YouTube HD::', 'Quality was', q, 'Changing quality is skipped');
+              console.log('YouTube HD::', 'Quality was', q, 'Changing quality is skipped');
             }
             return;
           }
           if (q === sfeerf.quality) {
             if (sfeerf.log) {
-              console.error('YouTube HD::', 'Selected quality is okay;', q);
+              console.log('YouTube HD::', 'Selected quality is okay;', q);
             }
             return;
           }
-          let tmp = 'auto';
-          let qualities = ['hd2160', 'hd1440', 'hd1080', 'hd720', 'large', 'medium', 'small', 'tiny', 'auto'];
-          function find (increase) {
+          const qualities = ['hd2160', 'hd1440', 'hd1080', 'hd720', 'large', 'medium', 'small', 'tiny', 'auto'];
+          const find = increase => {
             if (sfeerf.quality === 'highest') {
               return levels[0];
             }
@@ -44,7 +46,7 @@ script.textContent = `
               if (increase) {
                 sfeerf.quality = qualities[qualities.indexOf(sfeerf.quality) - 1] || levels[0];
               }
-              let index = levels.indexOf(sfeerf.quality);
+              const index = levels.indexOf(sfeerf.quality);
               if (index !== -1) {
                 return sfeerf.quality;
               }
@@ -52,28 +54,29 @@ script.textContent = `
                 return find(true);
               }
             }
-          }
-          let nq = find();
+          };
+          const nq = find();
           player.setPlaybackQuality(nq);
           if (sfeerf.log) {
-            console.error('YouTube HD::', 'Quality was', q, 'Quality is set to', nq);
+            console.log('YouTube HD::', 'Quality was', q, 'Quality is set to', nq);
           }
         }
       }
     }
-    catch(e) {
+    catch (e) {
       if (sfeerf.log) {
         console.error(e);
       }
     }
-  };
+  }
 
   var yttools = yttools || [];
-  yttools.push(function (e) {
+  yttools.push(function(e) {
+    sfeerf.player = e;
     iyhListenerChange(1);
     e.addEventListener('onStateChange', 'iyhListenerChange');
   });
-  function onYouTubePlayerReady (e) {
+  function onYouTubePlayerReady(e) {
     yttools.forEach(c => {
       try {
         c(e);
@@ -82,22 +85,22 @@ script.textContent = `
     });
   }
 
-  (function (observe) {
-    observe(window, 'ytplayer', (ytplayer) => {
-      observe(ytplayer, 'config', (config) => {
+  (function(observe) {
+    observe(window, 'ytplayer', ytplayer => {
+      observe(ytplayer, 'config', config => {
         if (config && config.args) {
           config.args.jsapicallback = 'onYouTubePlayerReady';
         }
       });
     });
-  })(function (object, property, callback) {
+  })(function(object, property, callback) {
     let value;
-    let descriptor = Object.getOwnPropertyDescriptor(object, property);
+    const descriptor = Object.getOwnPropertyDescriptor(object, property);
     Object.defineProperty(object, property, {
       enumerable: true,
       configurable: true,
       get: () => value,
-      set: (v) => {
+      set: v => {
         callback(v);
         if (descriptor && descriptor.set) {
           descriptor.set(v);
@@ -111,13 +114,10 @@ script.textContent = `
 document.documentElement.appendChild(script);
 
 //
-function update (prefs) {
-  let script = document.createElement('script');
-  script.textContent = `
-    sfeerf.hd = ${prefs.hd};
-    sfeerf.quality = '${prefs.quality}';
-    sfeerf.log = ${prefs.log};
-  `;
+function update(prefs) {
+  const script = document.createElement('script');
+  script.textContent = `sfeerf = Object.assign(sfeerf, JSON.parse('${JSON.stringify(prefs)}'));`;
+  console.log(script.textContent);
   document.documentElement.appendChild(script);
 }
 chrome.storage.local.get({
@@ -125,3 +125,10 @@ chrome.storage.local.get({
   quality: -1,
   log: false
 }, update);
+chrome.storage.onChanged.addListener(prefs => {
+  prefs = Object.entries(prefs).reduce((p, c) => {
+    const [key, value] = c;
+    p[key] = value.newValue;
+  }, {});
+  update(prefs);
+});

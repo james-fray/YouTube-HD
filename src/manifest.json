@@ -19,7 +19,7 @@
     "matches": ["*://www.youtube.com/*"],
     "js": ["data/inject.js"],
     "run_at": "document_start",
-    "all_frames": false
+    "all_frames": true
   }],
   "homepage_url": "http://add0n.com/youtube-hd.html?from=context",
   "options_ui": {

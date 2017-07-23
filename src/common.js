@@ -3,8 +3,8 @@
 chrome.storage.local.get({
   'version': null,
   'faqs': true
-}, (prefs) => {
-  let version = chrome.runtime.getManifest().version;
+}, prefs => {
+  const version = chrome.runtime.getManifest().version;
   if (prefs.version !== version) {
     window.setTimeout(() => {
       chrome.storage.local.set({version}, () => {
