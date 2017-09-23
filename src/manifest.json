@@ -3,7 +3,7 @@
   "short_name": "iyutubehd",
   "description": "Watch YouTube in the full-HD quality or the highest available one",
   "author": "James Fray",
-  "version": "0.2.2",
+  "version": "0.2.3.1",
   "manifest_version": 2,
   "permissions": [
     "tabs",
