@@ -11,7 +11,9 @@ script.textContent = `
     hd: true,
     quality: 0,
     log: false,
-    player: null
+    player: null,
+    higher: true,
+    once: false
   };
 
   function iyhListenerChange(e) {
@@ -28,10 +30,28 @@ script.textContent = `
             }
             return;
           }
+          const qualities = ['hd2160', 'hd1440', 'hd1080', 'hd720', 'large', 'medium', 'small', 'tiny', 'auto'];
           const q = player.getPlaybackQuality();
           if ((q.startsWith('h') && sfeerf.quality.startsWith('h')) && sfeerf.hd) {
             if (sfeerf.log) {
-              console.log('YouTube HD::', 'Quality was', q, 'Changing quality is skipped');
+              console.log('YouTube HD::', 'Quality was', q, 'Changing the quality is skipped');
+            }
+            return;
+          }
+          const compare = (q1, q2) => {
+            if (q2 === 'auto') {
+              return false;
+            }
+            const i1 = qualities.indexOf(q1);
+            const i2 = qualities.indexOf(q2);
+            if (i1 === -1 || i2 === -1) {
+              return false;
+            }
+            return i1 - i2 <= 0;
+          };
+          if (sfeerf.higher && compare(q, sfeerf.quality)) {
+            if (sfeerf.log) {
+              console.log('YouTube HD::', 'Quality was', q, 'which is higher or equal to ', sfeerf.quality, 'Changing the quality is skipped');
             }
             return;
           }
@@ -41,7 +61,6 @@ script.textContent = `
             }
             return;
           }
-          const qualities = ['hd2160', 'hd1440', 'hd1080', 'hd720', 'large', 'medium', 'small', 'tiny', 'auto'];
           const find = increase => {
             if (sfeerf.quality === 'highest') {
               return levels[0];
@@ -61,6 +80,13 @@ script.textContent = `
           };
           const nq = find();
           player.setPlaybackQuality(nq);
+          if (sfeerf.once) {
+            player.removeEventListener('onStateChange', 'iyhListenerChange');
+            iyhListenerChange = () => {};
+            if (sfeerf.log) {
+              console.log('YouTube HD::', 'Removing Listener');
+            }
+          }
           if (sfeerf.log) {
             console.log('YouTube HD::', 'Quality was', q, 'Quality is set to', nq);
           }
@@ -120,12 +146,13 @@ document.documentElement.appendChild(script);
 //
 function update(prefs) {
   const script = document.createElement('script');
-  script.textContent = `sfeerf = Object.assign(sfeerf, JSON.parse('${JSON.stringify(prefs)}'));`;
-  console.log(script.textContent);
+  script.textContent = `Object.assign(sfeerf, JSON.parse('${JSON.stringify(prefs)}'));`;
   document.documentElement.appendChild(script);
 }
 chrome.storage.local.get({
   hd: true,
+  once: false,
+  higher: true,
   quality: -1,
   log: false
 }, update);
@@ -133,6 +160,7 @@ chrome.storage.onChanged.addListener(prefs => {
   prefs = Object.entries(prefs).reduce((p, c) => {
     const [key, value] = c;
     p[key] = value.newValue;
+    return p;
   }, {});
   update(prefs);
 });

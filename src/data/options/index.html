@@ -13,17 +13,15 @@
     .note {
       font-size: 90%;
       color: rgb(112, 112, 112);
+      margin: 0;
+      padding-left: 15px;
     }
   </style>
 </head>
 
 <body>
   <p>
-    <label><input type="checkbox" id="hd"> Do not change video quality if an HD quality is selected and the preferred quality is also HD</label>
-    <div class="note">YouTube HD always tries to set the video quality based on your settings. This might not be your preference if video quality is already acceptable.</div>
-  </p>
-  <p>
-    What is your preferred HD quality?:
+    What is your preferred HD quality:
     <select id="quality">
       <option value="highest">Highest available quality</option>
       <option value="hd2160">2160p</option>
@@ -37,23 +35,47 @@
       <option value="auto">auto</option>
     </select>
   </p>
-  <p>
-    <label><input type="checkbox" id="log"> Display video quality logs in the browser console</label>
-    <div class="note">Use this option for debugging purpose. If enabled, the extension prints the current video quality and whether the quality change is necessary or not (you need to reload YouTube tabs).</div>
-  </p>
-  <p>
-    <label><input type="checkbox" id="faqs"> Open FAQs page on upgrade</label>
-    <div class="note">YouTube HD opens the FAQs page on each upgrade to notify users about their recent update and changes. If this is not your preferred behavior you can disable it.</div>
-  </p>
-  <h2>Note:</h2>
+
+  <table>
+    <tr>
+      <td><input type="checkbox" id="hd"></td>
+      <td><label for="hd">Do not change video quality if an HD quality is selected and the preferred quality is also HD<sup>1</sup></label></td>
+    </tr>
+    <tr>
+      <td><input type="checkbox" id="once"></td>
+      <td><label for="once">Only change the quality of the player once<sup>2</sup></label></td>
+    </tr>
+    <tr>
+      <td><input type="checkbox" id="higher"></td>
+      <td><label for="higher">Allow the player to increase the quality to a higher value</label><sup>3</sup></td>
+    </tr>
+    <tr>
+      <td><input type="checkbox" id="log"></td>
+      <td><label for="log">Display video quality logs in the browser console</label><sup>4</sup></td>
+    </tr>
+    <tr>
+      <td><input type="checkbox" id="faqs"></td>
+      <td><label for="faqs">Open FAQs page on upgrades</label><sup>5</sup></td>
+    </tr>
+  </table>
+
+  <h3>Note:</h3>
   <p>
     Quality change only occurs after in-player-advertisement is displayed or skipped. For faster quality changes skip in-player-advertisement using "YouTube™ Player AdBlocker" add-on: <a href="https://chrome.google.com/webstore/detail/youtube-player-adblocker/kpjdlhnmjhjnbeigfilbaiklikbopbca">Chrome</a>, <a href="https://addons.opera.com/extensions/details/youtubetm-player-adblocker/">Opera</a>, or <a href="https://addons.mozilla.org/firefox/addon/youtube-player-adblocker/">Firefox</a>
   </p>
 
-  <div>
+  <p>
     <button id="save">Save</button>
     <span id="status"></span>
-  </div>
+  </p>
+
+  <ol class="note">
+    <li>YouTube HD always tries to set the video quality based on your settings. This might not be your preference if video quality is already acceptable.</li>
+    <li>This is useful to allow reducing the quality later by the user.</li>
+    <li>Do not force the quality when a higher quality is selected.</li>
+    <li>Use this option for debugging purpose. If enabled, the extension prints the current video quality and whether the quality change is necessary or not.</li>
+    <li>YouTube HD opens the FAQs page on each upgrade to notify users about their recent update and changes. If this is not your preferred behavior you can disable it.</li>
+  </ol>
 
   <script src="index.js"></script>
 </body>

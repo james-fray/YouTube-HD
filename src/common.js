@@ -4,22 +4,24 @@
 
 'use strict';
 
+// FAQs & Feedback
 chrome.storage.local.get({
   'version': null,
-  'faqs': true
+  'faqs': navigator.userAgent.indexOf('Firefox') === -1
 }, prefs => {
   const version = chrome.runtime.getManifest().version;
-  if (prefs.version !== version) {
-    window.setTimeout(() => {
-      chrome.storage.local.set({version}, () => {
-        if (prefs.faqs) {
-          chrome.tabs.create({
-            url: 'http://add0n.com/youtube-hd.html?version=' +
-              version + '&type=' +
-              (prefs.version ? ('upgrade&p=' + prefs.version) : 'install')
-          });
-        }
+
+  if (prefs.version ? (prefs.faqs && prefs.version !== version) : true) {
+    chrome.storage.local.set({version}, () => {
+      chrome.tabs.create({
+        url: 'http://add0n.com/youtube-hd.html?version=' + version +
+          '&type=' + (prefs.version ? ('upgrade&p=' + prefs.version) : 'install')
       });
-    }, 3000);
+    });
   }
 });
+
+{
+  const {name, version} = chrome.runtime.getManifest();
+  chrome.runtime.setUninstallURL('http://add0n.com/feedback.html?name=' + name + '&version=' + version);
+}
