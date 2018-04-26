@@ -46,3 +46,23 @@ function save() {
 
 document.addEventListener('DOMContentLoaded', restore);
 document.getElementById('save').addEventListener('click', save);
+
+document.getElementById('reset').addEventListener('click', e => {
+  if (e.detail === 1) {
+    const status = document.getElementById('status');
+    status.textContent = 'Double-click to reset!';
+    setTimeout(() => status.textContent = '', 750);
+  }
+  else {
+    localStorage.clear();
+    chrome.storage.local.clear(() => {
+      chrome.runtime.reload();
+      window.close();
+    });
+  }
+});
+
+// support
+document.getElementById('support').addEventListener('click', () => chrome.tabs.create({
+  url: chrome.runtime.getManifest().homepage_url + '?rd=donate'
+}));

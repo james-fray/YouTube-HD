@@ -80,6 +80,10 @@ script.textContent = `
           };
           const nq = find();
           player.setPlaybackQuality(nq);
+          try {
+            player.setPlaybackQualityRange(nq, nq);
+          }
+          catch(e) {}
           if (sfeerf.once) {
             player.removeEventListener('onStateChange', 'iyhListenerChange');
             iyhListenerChange = () => {};
