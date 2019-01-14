@@ -15,7 +15,8 @@
     ]
   },
   "content_scripts": [{
-    "matches": ["*://www.youtube.com/*"],
+    "matches": ["*://www.youtube.com/*",
+                "*://www.youtube-nocookie.com/embed/*"],
     "js": ["data/inject.js"],
     "run_at": "document_start",
     "all_frames": true
