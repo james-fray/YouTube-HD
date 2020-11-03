@@ -11,14 +11,17 @@ function restore() {
     higher: true,
     quality: 'highest',
     log: false,
-    faqs: true
+    faqs: true,
+    highFramerate: true
   }, prefs => {
+    console.log(prefs);
     document.getElementById('hd').checked = prefs.hd;
     document.getElementById('once').checked = prefs.once;
     document.getElementById('higher').checked = prefs.higher;
     document.getElementById('log').checked = prefs.log;
     document.getElementById('faqs').checked = prefs.faqs;
     document.getElementById('quality').value = prefs.quality;
+    document.getElementById('highFramerate').checked = prefs.highFramerate;
   });
 }
 
@@ -29,6 +32,7 @@ function save() {
   const log = document.getElementById('log').checked;
   const faqs = document.getElementById('faqs').checked;
   const quality = document.getElementById('quality').value;
+  const highFramerate = document.getElementById('highFramerate').checked;
 
   chrome.storage.local.set({
     hd,
@@ -36,7 +40,8 @@ function save() {
     higher,
     log,
     faqs,
-    quality
+    quality,
+    highFramerate
   }, () => {
     const status = document.getElementById('status');
     status.textContent = 'Options saved.';

@@ -1,9 +1,7 @@
 {
-  "name": "HD quality for YouTube™ (1080p, 1440p, 2160p)",
-  "short_name": "iyutubehd",
-  "description": "Watch YouTube in the full-HD quality or the highest available one",
-  "author": "James Fray",
-  "version": "0.2.4",
+  "name": "Auto High Quality for YouTube™",
+  "description": "Automatically change YouTube video quality to HD resolution or the highest available one",
+  "version": "0.3.0",
   "manifest_version": 2,
   "permissions": [
     "storage"
@@ -20,7 +18,7 @@
     "run_at": "document_start",
     "all_frames": true
   }],
-  "homepage_url": "http://add0n.com/youtube-hd.html",
+  "homepage_url": "https://add0n.com/youtube-hd.html",
   "options_ui": {
     "page": "data/options/index.html",
     "chrome_style": true
@@ -32,6 +30,7 @@
     "38": "data/icons/38.png",
     "48": "data/icons/48.png",
     "128": "data/icons/128.png",
-    "256": "data/icons/256.png"
+    "256": "data/icons/256.png",
+    "512": "data/icons/512.png"
   }
 }
