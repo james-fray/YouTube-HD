@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>YouTube HD Options</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="index.css">
+</head>
+
+<body>
+  <p class="two">
+    <span>Preferred Quality:</span>
+    <select id="quality">
+      <option value="highest">Highest Available Quality</option>
+      <option value="hd2160">HD 2160</option>
+      <option value="hd1440">HD 1440</option>
+      <option value="hd1080">HD 1080</option>
+      <option value="hd720">HD 720</option>
+      <option value="large">Large</option>
+      <option value="medium">Medium</option>
+      <option value="small">Small</option>
+      <option value="tiny">Tiny</option>
+      <option value="auto">Auto</option>
+    </select>
+  </p>
+
+  <div class="tbl">
+    <input type="checkbox" id="hd">
+    <label for="hd">Do not change <a target="_blank" data-href="faq3">video quality</a> if an HD quality is selected and the preferred quality is also HD<sup>1</sup></label>
+    <input type="checkbox" id="once">
+    <label for="once">Only change the quality of the player once<sup>2</sup></label>
+    <input type="checkbox" id="higher">
+    <label for="higher">Allow the player to increase the quality to a higher value<sup>3</sup></label>
+    <input type="checkbox" id="highFramerate">
+    <label for="highFramerate">Allow the player to <a data-href="faq7" target="_blank">use higher than 30 FPS frame rate</a></label>
+    <input type="checkbox" id="log">
+    <label for="log">Display video quality logs in the browser console<sup>4</sup></label>
+    <input type="checkbox" id="faqs">
+    <label for="faqs">Open FAQs page on upgrades</label>
+  </div>
+
+
+  <p>
+    <button id="support">Support Development</button>
+    <button id="reset">Reset</button>
+    <button id="save">Save Options</button>
+    <span id="toast"></span>
+  </p>
+
+  <hr style="border:none; border-bottom: dashed 1px #ccc; margin: 20px 0;">
+
+  <ol class="note">
+    <li>YouTube HD always tries to set the video quality based on your settings. This might not be your preference if video quality is already acceptable.</li>
+    <li>This is useful to allow reducing the quality later by the user.</li>
+    <li>Do not force the quality when a higher quality is selected.</li>
+    <li>Use this option for debugging purpose. If enabled, the extension prints the current video quality and whether the quality change is necessary or not.</li>
+  </ol>
+
+  <script src="index.js"></script>
+</body>
+</html>

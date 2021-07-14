@@ -1,0 +1,38 @@
+{
+  "name": "Auto High Quality for YouTube™",
+  "description": "Automatically change YouTube video quality to HD resolution or the highest available one",
+  "version": "0.4.0",
+  "manifest_version": 3,
+  "permissions": [
+    "storage"
+  ],
+  "background": {
+    "service_worker": "worker.js"
+  },
+  "content_scripts": [{
+    "matches": ["*://www.youtube.com/*"],
+    "js": [
+      "data/inject.js"
+    ],
+    "run_at": "document_start",
+    "all_frames": true
+  }],
+  "homepage_url": "https://add0n.com/youtube-hd.html",
+  "options_ui": {
+    "page": "data/options/index.html"
+  },
+  "icons": {
+    "16": "data/icons/16.png",
+    "19": "data/icons/19.png",
+    "32": "data/icons/32.png",
+    "38": "data/icons/38.png",
+    "48": "data/icons/48.png",
+    "128": "data/icons/128.png",
+    "256": "data/icons/256.png",
+    "512": "data/icons/512.png"
+  },
+  "web_accessible_resources": [{
+    "resources": ["/data/code.js"],
+    "matches": ["*://www.youtube.com/*"]
+  }]
+}
