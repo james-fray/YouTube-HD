@@ -3,12 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 {
-  const script = document.currentScript;
+  const span = document.getElementById('yh-ghbhw5s');
+  span.remove();
 
   // disable 60 framerate videos
   MediaSource.isTypeSupported = new Proxy(MediaSource.isTypeSupported, {
     apply(target, self, args) {
-      if (script.dataset.highFramerate === 'false') {
+      if (span.dataset.highFramerate === 'false') {
         const matches = (args[0] || '').match(/framerate=(\d+)/);
         if (matches && (matches[1] > 30)) {
           return false;
@@ -18,9 +19,16 @@
     }
   });
 
-  const youtubeHDListener = (script, player, e) => {
-    const prefs = script.dataset;
+  const youtubeHDListener = (span, player, e) => {
+    if (span.skipped) {
+      return;
+    }
+
+    const prefs = span.dataset;
     const log = (...args) => prefs.log === 'true' && console.log('YouTube HD::', ...args);
+    const report = q => span.dispatchEvent(new CustomEvent('quality', {
+      detail: q
+    }));
 
     try {
       if (e === 1 && player) {
@@ -34,6 +42,7 @@
         const q = player.getPlaybackQuality();
 
         if ((q.startsWith('h') && prefs.quality.startsWith('h')) && prefs.hd === 'true') {
+          report(q);
           return log('Quality was', q, 'Changing is skipped');
         }
         const compare = (q1, q2) => {
@@ -48,9 +57,11 @@
           return i1 - i2 <= 0;
         };
         if (prefs.higher === 'true' && compare(q, prefs.quality)) {
+          report(q);
           return log('Quality was', q, 'which is higher than ', prefs.quality, 'Changing is skipped');
         }
         if (q === prefs.quality) {
+          report(q);
           return log('Selected quality is okay;', q);
         }
         const find = increase => {
@@ -70,16 +81,17 @@
         };
         const nq = find();
         if (q === nq) {
+          report(q);
           return log('Quality was', q, 'no better quality', 'Changing is skipped');
         }
+        report(nq);
         player.setPlaybackQuality(nq);
         try {
           player.setPlaybackQualityRange(nq, nq);
         }
         catch (e) {}
         if (prefs.once === 'true') {
-          player.removeEventListener('onStateChange', 'youtubeHDListener');
-          window.youtubeHDListener = () => {};
+          span.skipped = true;
           log('Removing Listener');
         }
         log('Quality was', q, 'Quality is set to', nq);
@@ -90,31 +102,30 @@
     }
   };
 
-  window.yttools = window.yttools || [];
-  window.yttools.push(e => {
-    const o = youtubeHDListener.bind(this, script, e);
-    o(1);
-    e.addEventListener('onStateChange', o);
-  });
+  const observe = () => {
+    if (observe.ready) {
+      return;
+    }
+    const p = [...document.querySelectorAll('.html5-video-player')].sort((a, b) => {
+      return b.offsetHeight - a.offsetHeight;
+    }).shift();
 
-  /* detect player state */
-  window.onYouTubePlayerReady = function(player) {
-    for (let c; c = window.yttools.shift(), c;) {
-      try {
-        c(player);
-      }
-      catch (e) {}
+    if (p) {
+      const o = youtubeHDListener.bind(this, span, p);
+      p.addEventListener('onStateChange', o);
+      observe.ready = true;
+
+      o('getPlayerState' in p ? p.getPlayerState() : 1);
     }
   };
-  window.addEventListener('spfready', () => {
-    if (typeof window.ytplayer === 'object' && window.ytplayer.config && window.yttools.resolved !== true) {
-      window.ytplayer.config.args.jsapicallback = 'onYouTubePlayerReady';
-    }
-  });
+
+  // top frame
   window.addEventListener('yt-navigate-finish', () => {
-    const player = document.querySelector('.html5-video-player');
-    if (player) {
-      window.onYouTubePlayerReady(player);
-    }
+    span.skipped = false;
+    observe();
   });
+  // embedded YouTube
+  window.addEventListener('play', () => {
+    observe();
+  }, true);
 }

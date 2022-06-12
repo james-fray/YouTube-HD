@@ -1,8 +1,25 @@
+:root {
+  color-scheme: dark light;
+
+  --fg: #4d5156;
+  --bg: #fff;
+  --links: #1870d8;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    --fg: #bab9ba;
+    --bg: #1f1e21;
+    --links: #99c9fe;
+  }
+}
+
 body {
   font-size: 13px;
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
-  background-color: #fff;
-  color: #4d5156;
+  background-color: var(--bg);
+  color: var(--fg);
+  width: 600px;
 }
 select,
 button,
@@ -32,14 +49,8 @@ textarea {
 }
 a,
 a:visited {
-  color: #07c;
-}
-
-.note {
-  font-size: 90%;
-  color: rgb(112, 112, 112);
-  margin: 0;
-  padding-left: 15px;
+  color: var(--links);
+  text-decoration: none;
 }
 
 .tbl {

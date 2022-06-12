@@ -8,6 +8,7 @@ const toast = document.getElementById('toast');
 
 function restore() {
   chrome.storage.local.get({
+    enabled: true,
     hd: true,
     once: false,
     higher: true,
@@ -16,7 +17,7 @@ function restore() {
     faqs: true,
     highFramerate: true
   }, prefs => {
-    console.log(prefs);
+    document.getElementById('enabled').checked = prefs.enabled;
     document.getElementById('hd').checked = prefs.hd;
     document.getElementById('once').checked = prefs.once;
     document.getElementById('higher').checked = prefs.higher;
@@ -28,6 +29,7 @@ function restore() {
 }
 
 function save() {
+  const enabled = document.getElementById('enabled').checked;
   const hd = document.getElementById('hd').checked;
   const once = document.getElementById('once').checked;
   const higher = document.getElementById('higher').checked;
@@ -37,6 +39,7 @@ function save() {
   const highFramerate = document.getElementById('highFramerate').checked;
 
   chrome.storage.local.set({
+    enabled,
     hd,
     once,
     higher,
@@ -51,7 +54,7 @@ function save() {
 }
 
 document.addEventListener('DOMContentLoaded', restore);
-document.getElementById('save').addEventListener('click', save);
+document.addEventListener('change', save);
 
 document.getElementById('reset').addEventListener('click', e => {
   if (e.detail === 1) {
@@ -70,6 +73,14 @@ document.getElementById('reset').addEventListener('click', e => {
 // support
 document.getElementById('support').addEventListener('click', () => chrome.tabs.create({
   url: chrome.runtime.getManifest().homepage_url + '?rd=donate'
+}));
+
+// refresh
+document.getElementById('refresh').addEventListener('click', () => chrome.tabs.query({
+  currentWindow: true,
+  active: true
+}).then(([tab]) => {
+  chrome.tabs.reload(tab.id);
 }));
 
 // Links

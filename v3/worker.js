@@ -4,6 +4,58 @@
 
 'use strict';
 
+/* enable or disable the blocker */
+const activate = () => {
+  if (activate.busy) {
+    return;
+  }
+  activate.busy = true;
+
+  chrome.storage.local.get({
+    enabled: true
+  }, async prefs => {
+    try {
+      await chrome.scripting.unregisterContentScripts();
+
+      if (prefs.enabled) {
+        const props = {
+          'matches': ['*://www.youtube.com/*'],
+          'allFrames': true,
+          'runAt': 'document_start'
+        };
+        await chrome.scripting.registerContentScripts([{
+          'id': 'chrome',
+          'js': ['/data/isolated.js'],
+          'world': 'ISOLATED',
+          ...props
+        }, {
+          'id': 'page',
+          'js': ['/data/main.js'],
+          'world': 'MAIN',
+          ...props
+        }]);
+      }
+    }
+    catch (e) {
+      console.error('Registration Failed', e);
+    }
+    activate.busy = false;
+  });
+};
+chrome.runtime.onStartup.addListener(activate);
+chrome.runtime.onInstalled.addListener(activate);
+chrome.storage.onChanged.addListener(ps => ps.enabled && activate());
+
+/* messaging */
+chrome.runtime.onMessage.addListener((request, sender) => {
+  if (request.method === 'quality') {
+    chrome.action.setBadgeText({
+      tabId: sender.tab.id,
+      text: request.quality.replace('hd', '').replace('p', '')
+    });
+  }
+});
+
 /* FAQs & Feedback */
 {
   const {management, runtime: {onInstalled, setUninstallURL, getManifest}, storage, tabs} = chrome;
