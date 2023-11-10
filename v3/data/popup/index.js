@@ -15,6 +15,7 @@ function restore() {
     quality: 'highest',
     log: false,
     faqs: true,
+    nextHighest: false,
     highFramerate: true
   }, prefs => {
     document.getElementById('enabled').checked = prefs.enabled;
@@ -24,6 +25,7 @@ function restore() {
     document.getElementById('log').checked = prefs.log;
     document.getElementById('faqs').checked = prefs.faqs;
     document.getElementById('quality').value = prefs.quality;
+    document.getElementById('nextHighest').checked = prefs.nextHighest;
     document.getElementById('highFramerate').checked = prefs.highFramerate;
   });
 }
@@ -36,6 +38,7 @@ function save() {
   const log = document.getElementById('log').checked;
   const faqs = document.getElementById('faqs').checked;
   const quality = document.getElementById('quality').value;
+  const nextHighest = document.getElementById('nextHighest').checked;
   const highFramerate = document.getElementById('highFramerate').checked;
 
   chrome.storage.local.set({
@@ -46,6 +49,7 @@ function save() {
     log,
     faqs,
     quality,
+    nextHighest,
     highFramerate
   }, () => {
     toast.textContent = 'Options saved.';

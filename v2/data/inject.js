@@ -11,6 +11,7 @@ const prefs = {
   higher: true,
   quality: -1,
   log: false,
+  nextHighest: false,
   highFramerate: true
 };
 
