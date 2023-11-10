@@ -76,6 +76,12 @@
             if (index !== -1) {
               return prefs.quality;
             }
+
+            if (prefs.nextHighest === 'true') {
+              prefs.quality = qualities[qualities.indexOf(prefs.quality) + 1] || levels[levels.length - 1];
+              return find();
+            }
+
             return find(true);
           }
         };
