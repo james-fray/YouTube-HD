@@ -51,14 +51,8 @@ const code = () => {
           return qualities;
         };
 
-        const setPlaybackQuality = async (quality) => {
-          let attempts = 0;
-
-          while (true) {
-            if (attempts >= maxAttempts) {
-              return log('Failed to set playback quality');
-            }
-
+        const setPlaybackQuality = async quality => {
+          for (let n = 0; n < maxAttempts; n += 1) {
             try {
               player.setPlaybackQuality(quality);
               player.setPlaybackQualityRange(quality, quality);
@@ -68,19 +62,18 @@ const code = () => {
             catch {
               await sleep(retryInMs);
             }
-
-            attempts++;
           }
+          return log('Failed to set playback quality');
         };
-        
-        let availableQualities = await getAvailableQualities(10);
+
+        const availableQualities = await getAvailableQualities();
 
         if (availableQualities.length === 0) {
           return log('getAvailableQualityLevels returned empty array');
         }
 
         const currentQuality = player.getPlaybackQuality();
-        const preferredQuality = prefs.quality === "highest" ? availableQualities[0] : prefs.quality;
+        const preferredQuality = prefs.quality === 'highest' ? availableQualities[0] : prefs.quality;
         const isPreferredQualityAvailable = availableQualities.indexOf(preferredQuality) !== -1;
 
         if (hasQualityBeenSetAlready) {
@@ -88,27 +81,27 @@ const code = () => {
         }
 
         if (prefs.hd === 'true' && currentQuality.startsWith('hd')) {
-          await setPlaybackQuality(currentQuality);
-          return log('Quality set to', currentQuality);
+          // await setPlaybackQuality(currentQuality);
+          return log('Selected quality is okay;', currentQuality);
         }
 
         if (currentQuality === preferredQuality) {
-          await setPlaybackQuality(preferredQuality);
-          return log('Quality set to', preferredQuality);
+          // await setPlaybackQuality(preferredQuality);
+          return log('Selected quality is okay;', currentQuality);
         }
 
         if (!isPreferredQualityAvailable && prefs.nextHighest === 'true') {
           await setPlaybackQuality(availableQualities[0]);
-          return log('Quality set to:', availableQualities[0]);
+          return log('Old Quality: ' + currentQuality + ', New Quality: ' + availableQualities[0]);
         }
 
         if (prefs.higher === 'true' && availableQualities.indexOf(currentQuality) < availableQualities.indexOf(preferredQuality)) {
-          return log('Current quality ('+ currentQuality + ') is higher than the preferred quality (' + preferredQuality + ')');
+          return log('Current quality (' + currentQuality + ') is higher than the preferred quality (' + preferredQuality + ')');
         }
 
         if (isPreferredQualityAvailable) {
           await setPlaybackQuality(preferredQuality);
-          return log('Quality set to', preferredQuality);
+          return log('Old Quality: ' + currentQuality + ', New Quality: ' + preferredQuality);
         }
 
         if (prefs.once === 'true') {
@@ -142,12 +135,12 @@ const code = () => {
       });
     }
   };
-  window.addEventListener('spfready', () => {
+  addEventListener('spfready', () => {
     if (typeof window.ytplayer === 'object' && window.ytplayer.config && window.yttools.resolved !== true) {
       window.ytplayer.config.args.jsapicallback = 'onYouTubePlayerReady';
     }
   });
-  window.addEventListener('yt-navigate-finish', () => {
+  addEventListener('yt-navigate-finish', () => {
     const player = document.querySelector('.html5-video-player');
     if (player && window.yttools.resolved !== true) {
       window.yttools.resolved = true;

@@ -13,18 +13,26 @@ const prefs = {
   nextHighest: false,
   highFramerate: true
 };
-const span = document.createElement('span');
-span.id = 'yh-ghbhw5s';
-document.documentElement.append(span);
+
+let port;
+try {
+  port = document.getElementById('yh-ghbhw5s');
+  port.remove();
+}
+catch (e) {
+  port = document.createElement('span');
+  port.id = 'yh-ghbhw5s';
+  document.documentElement.append(port);
+}
 
 chrome.storage.local.get(prefs, prefs => {
-  Object.assign(span.dataset, prefs);
+  Object.assign(port.dataset, prefs);
 });
 chrome.storage.onChanged.addListener(prefs => {
-  Object.entries(prefs).forEach(([key, value]) => span.dataset[key] = value.newValue);
+  Object.entries(prefs).forEach(([key, value]) => port.dataset[key] = value.newValue);
 });
 
-span.addEventListener('quality', e => {
+port.addEventListener('quality', e => {
   let quality = e.detail;
   switch (quality) {
   case 'tiny':

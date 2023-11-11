@@ -3,13 +3,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 {
-  const span = document.getElementById('yh-ghbhw5s');
-  span.remove();
+  let port;
+  try {
+    port = document.getElementById('yh-ghbhw5s');
+    port.remove();
+  }
+  catch (e) {
+    port = document.createElement('span');
+    port.id = 'yh-ghbhw5s';
+    document.documentElement.append(port);
+  }
 
   // disable 60 framerate videos
   MediaSource.isTypeSupported = new Proxy(MediaSource.isTypeSupported, {
     apply(target, self, args) {
-      if (span.dataset.highFramerate === 'false') {
+      if (port.dataset.highFramerate === 'false') {
         const matches = (args[0] || '').match(/framerate=(\d+)/);
         if (matches && (matches[1] > 30)) {
           return false;
@@ -19,97 +27,87 @@
     }
   });
 
-  const youtubeHDListener = async (span, player, e) => {
-    if (span.skipped) {
+  const youtubeHDListener = async (port, player, e) => {
+    if (port.skipped) {
       return;
     }
 
     const maxAttempts = 10;
     const retryInMs = 1000;
-    const prefs = span.dataset;
+    const prefs = port.dataset;
     const log = (...args) => prefs.log === 'true' && console.log('YouTube HD::', ...args);
-    const report = q => span.dispatchEvent(new CustomEvent('quality', {
+    const report = q => port.dispatchEvent(new CustomEvent('quality', {
       detail: q
     }));
+    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
     let hasQualityBeenSetAlready = false;
 
     try {
       if (e === 1 && player) {
         const getAvailableQualities = async () => {
-          let qualities = player.getAvailableQualityLevels();
-          let attempts = 1;
-
-          while (qualities.length === 0) {
-            await sleep(retryInMs);
-
-            if (attempts >= maxAttempts) {
-              break;
+          for (let n = 0; n < maxAttempts; n += 1) {
+            const qualities = player.getAvailableQualityLevels();
+            if (qualities.length) {
+              return qualities;
             }
-            qualities = player.getAvailableQualityLevels();
-            attempts++;
+            await sleep(retryInMs);
           }
-
-          return qualities;
+          return [];
         };
 
-        const setPlaybackQuality = async (quality) => {
-          let attempts = 0;
-
-          while (true) {
-            if (attempts >= maxAttempts) {
-              return log('Failed to set playback quality');
-            }
-
+        const setPlaybackQuality = async quality => {
+          for (let n = 0; n < maxAttempts; n += 1) {
             try {
               player.setPlaybackQuality(quality);
               player.setPlaybackQualityRange(quality, quality);
               hasQualityBeenSetAlready = true;
+              report(quality);
               return;
             }
             catch {
               await sleep(retryInMs);
             }
-
-            attempts++;
           }
+          return log('Failed to set playback quality');
         };
-        
-        let availableQualities = await getAvailableQualities(10);
+
+        const availableQualities = await getAvailableQualities();
 
         if (availableQualities.length === 0) {
           return log('getAvailableQualityLevels returned empty array');
         }
 
         const currentQuality = player.getPlaybackQuality();
-        const preferredQuality = prefs.quality === "highest" ? availableQualities[0] : prefs.quality;
-        const isPreferredQualityAvailable = availableQualities.indexOf(preferredQuality) !== -1;
+        const preferredQuality = prefs.quality === 'highest' ? availableQualities[0] : prefs.quality;
+        const isPreferredQualityAvailable = availableQualities.includes(preferredQuality);
 
         if (hasQualityBeenSetAlready) {
           return log('Quality already set');
         }
 
         if (prefs.hd === 'true' && currentQuality.startsWith('hd')) {
-          await setPlaybackQuality(currentQuality);
-          return log('Quality set to', currentQuality);
+          report(currentQuality);
+          return log('Selected quality is okay;', currentQuality);
         }
 
         if (currentQuality === preferredQuality) {
-          await setPlaybackQuality(preferredQuality);
-          return log('Quality set to', preferredQuality);
+          report(currentQuality);
+          return log('Selected quality is okay;', currentQuality);
         }
 
         if (!isPreferredQualityAvailable && prefs.nextHighest === 'true') {
           await setPlaybackQuality(availableQualities[0]);
-          return log('Quality set to:', availableQualities[0]);
+          return log('Old Quality: ' + currentQuality + ', New Quality: ' + availableQualities[0]);
         }
 
         if (prefs.higher === 'true' && availableQualities.indexOf(currentQuality) < availableQualities.indexOf(preferredQuality)) {
-          return log('Current quality ('+ currentQuality + ') is higher than the preferred quality (' + preferredQuality + ')');
+          report(currentQuality);
+          return log('Current quality (' + currentQuality + ') is higher than the preferred quality (' + preferredQuality + ')');
         }
 
         if (isPreferredQualityAvailable) {
           await setPlaybackQuality(preferredQuality);
-          return log('Quality set to', preferredQuality);
+          return log('Old Quality: ' + currentQuality + ', New Quality: ' + preferredQuality);
         }
 
         if (prefs.once === 'true') {
@@ -133,7 +131,7 @@
     }).shift();
 
     if (p) {
-      const o = youtubeHDListener.bind(this, span, p);
+      const o = youtubeHDListener.bind(this, port, p);
       p.addEventListener('onStateChange', o);
       observe.ready = true;
 
@@ -142,12 +140,10 @@
   };
 
   // top frame
-  window.addEventListener('yt-navigate-finish', () => {
-    span.skipped = false;
+  addEventListener('yt-navigate-finish', () => {
+    port.skipped = false;
     observe();
   });
   // embedded YouTube
-  window.addEventListener('play', () => {
-    observe();
-  }, true);
+  addEventListener('play', () => observe(), true);
 }
