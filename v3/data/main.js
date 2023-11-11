@@ -19,82 +19,104 @@
     }
   });
 
-  const youtubeHDListener = (span, player, e) => {
+  const youtubeHDListener = async (span, player, e) => {
     if (span.skipped) {
       return;
     }
 
+    const maxAttempts = 10;
+    const retryInMs = 1000;
     const prefs = span.dataset;
     const log = (...args) => prefs.log === 'true' && console.log('YouTube HD::', ...args);
     const report = q => span.dispatchEvent(new CustomEvent('quality', {
       detail: q
     }));
+    let hasQualityBeenSetAlready = false;
 
     try {
       if (e === 1 && player) {
-        const levels = player.getAvailableQualityLevels();
-        if (levels.length === 0) {
+        const getAvailableQualities = async () => {
+          let qualities = player.getAvailableQualityLevels();
+          let attempts = 1;
+
+          while (qualities.length === 0) {
+            await sleep(retryInMs);
+
+            if (attempts >= maxAttempts) {
+              break;
+            }
+            qualities = player.getAvailableQualityLevels();
+            attempts++;
+          }
+
+          return qualities;
+        };
+
+        const setPlaybackQuality = async (quality) => {
+          let attempts = 0;
+
+          while (true) {
+            if (attempts >= maxAttempts) {
+              return log('Failed to set playback quality');
+            }
+
+            try {
+              player.setPlaybackQuality(quality);
+              player.setPlaybackQualityRange(quality, quality);
+              hasQualityBeenSetAlready = true;
+              return;
+            }
+            catch {
+              await sleep(retryInMs);
+            }
+
+            attempts++;
+          }
+        };
+        
+        let availableQualities = await getAvailableQualities(10);
+
+        if (availableQualities.length === 0) {
           return log('getAvailableQualityLevels returned empty array');
         }
-        const qualities = player.getAvailableQualityLevels() || [
-          'hd2160', 'hd1440', 'hd1080', 'hd720', 'large', 'medium', 'small', 'tiny', 'auto'
-        ];
-        const q = player.getPlaybackQuality();
 
-        if ((q.startsWith('h') && prefs.quality.startsWith('h')) && prefs.hd === 'true') {
-          report(q);
-          return log('Quality was', q, 'Changing is skipped');
+        const currentQuality = player.getPlaybackQuality();
+        const preferredQuality = prefs.quality === "highest" ? availableQualities[0] : prefs.quality;
+        const isPreferredQualityAvailable = availableQualities.indexOf(preferredQuality) !== -1;
+
+        if (hasQualityBeenSetAlready) {
+          return log('Quality already set');
         }
-        const compare = (q1, q2) => {
-          if (q2 === 'auto') {
-            return false;
-          }
-          const i1 = qualities.indexOf(q1);
-          const i2 = qualities.indexOf(q2);
-          if (i1 === -1 || i2 === -1) {
-            return false;
-          }
-          return i1 - i2 <= 0;
-        };
-        if (prefs.higher === 'true' && compare(q, prefs.quality)) {
-          report(q);
-          return log('Quality was', q, 'which is higher than ', prefs.quality, 'Changing is skipped');
+
+        if (prefs.hd === 'true' && currentQuality.startsWith('hd')) {
+          await setPlaybackQuality(currentQuality);
+          return log('Quality set to', currentQuality);
         }
-        if (q === prefs.quality) {
-          report(q);
-          return log('Selected quality is okay;', q);
+
+        if (currentQuality === preferredQuality) {
+          await setPlaybackQuality(preferredQuality);
+          return log('Quality set to', preferredQuality);
         }
-        const find = increase => {
-          if (prefs.quality === 'highest') {
-            return levels[0];
-          }
-          else {
-            if (increase) {
-              prefs.quality = qualities[qualities.indexOf(prefs.quality) - 1] || levels[0];
-            }
-            const index = levels.indexOf(prefs.quality);
-            if (index !== -1) {
-              return prefs.quality;
-            }
-            return find(true);
-          }
-        };
-        const nq = find();
-        if (q === nq) {
-          report(q);
-          return log('Quality was', q, 'no better quality', 'Changing is skipped');
+
+        if (!isPreferredQualityAvailable && prefs.nextHighest === 'true') {
+          await setPlaybackQuality(availableQualities[0]);
+          return log('Quality set to:', availableQualities[0]);
         }
-        report(nq);
-        player.setPlaybackQuality(nq);
-        try {
-          player.setPlaybackQualityRange(nq, nq);
+
+        if (prefs.higher === 'true' && availableQualities.indexOf(currentQuality) < availableQualities.indexOf(preferredQuality)) {
+          return log('Current quality ('+ currentQuality + ') is higher than the preferred quality (' + preferredQuality + ')');
         }
-        catch (e) {}
+
+        if (isPreferredQualityAvailable) {
+          await setPlaybackQuality(preferredQuality);
+          return log('Quality set to', preferredQuality);
+        }
+
         if (prefs.once === 'true') {
-          span.skipped = true;
+          player.removeEventListener('onStateChange', 'youtubeHDListener');
+          window.youtubeHDListener = () => {};
           log('Removing Listener');
         }
-        log('Quality was', q, 'Quality is set to', nq);
       }
     }
     catch (e) {
