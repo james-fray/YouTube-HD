@@ -1,7 +1,7 @@
 {
   "name": "Auto High Quality for YouTube™",
   "description": "Automatically change YouTube video quality to HD resolution or the highest available one",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "manifest_version": 2,
   "permissions": [
     "storage"
@@ -21,7 +21,7 @@
     "run_at": "document_start",
     "all_frames": true
   }],
-  "homepage_url": "https://add0n.com/youtube-hd.html",
+  "homepage_url": "https://webextension.org/listing/youtube-hd.html",
   "options_ui": {
     "page": "data/options/index.html"
   },

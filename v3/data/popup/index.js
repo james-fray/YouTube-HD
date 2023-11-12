@@ -14,7 +14,6 @@ function restore() {
     higher: true,
     quality: 'highest',
     log: false,
-    faqs: true,
     nextHighest: false,
     highFramerate: true
   }, prefs => {
@@ -23,7 +22,6 @@ function restore() {
     document.getElementById('once').checked = prefs.once;
     document.getElementById('higher').checked = prefs.higher;
     document.getElementById('log').checked = prefs.log;
-    document.getElementById('faqs').checked = prefs.faqs;
     document.getElementById('quality').value = prefs.quality;
     document.getElementById('nextHighest').checked = prefs.nextHighest;
     document.getElementById('highFramerate').checked = prefs.highFramerate;
@@ -36,7 +34,6 @@ function save() {
   const once = document.getElementById('once').checked;
   const higher = document.getElementById('higher').checked;
   const log = document.getElementById('log').checked;
-  const faqs = document.getElementById('faqs').checked;
   const quality = document.getElementById('quality').value;
   const nextHighest = document.getElementById('nextHighest').checked;
   const highFramerate = document.getElementById('highFramerate').checked;
@@ -47,7 +44,6 @@ function save() {
     once,
     higher,
     log,
-    faqs,
     quality,
     nextHighest,
     highFramerate

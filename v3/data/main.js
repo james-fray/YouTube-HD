@@ -14,6 +14,11 @@
     document.documentElement.append(port);
   }
 
+  const config = {
+    maxAttempts: 10,
+    retryInMs: 1000
+  };
+
   // disable 60 framerate videos
   MediaSource.isTypeSupported = new Proxy(MediaSource.isTypeSupported, {
     apply(target, self, args) {
@@ -32,8 +37,6 @@
       return;
     }
 
-    const maxAttempts = 10;
-    const retryInMs = 1000;
     const prefs = port.dataset;
     const log = (...args) => prefs.log === 'true' && console.log('YouTube HD::', ...args);
     const report = q => port.dispatchEvent(new CustomEvent('quality', {
@@ -45,18 +48,18 @@
     try {
       if (e === 1 && player) {
         const getAvailableQualities = async () => {
-          for (let n = 0; n < maxAttempts; n += 1) {
+          for (let n = 0; n < config.maxAttempts; n += 1) {
             const qualities = player.getAvailableQualityLevels();
             if (qualities.length) {
               return qualities;
             }
-            await sleep(retryInMs);
+            await sleep(config.retryInMs);
           }
           return [];
         };
 
         const setPlaybackQuality = async quality => {
-          for (let n = 0; n < maxAttempts; n += 1) {
+          for (let n = 0; n < config.maxAttempts; n += 1) {
             try {
               player.setPlaybackQuality(quality);
               player.setPlaybackQualityRange(quality, quality);
@@ -65,7 +68,7 @@
               return;
             }
             catch {
-              await sleep(retryInMs);
+              await sleep(config.retryInMs);
             }
           }
           return log('Failed to set playback quality');

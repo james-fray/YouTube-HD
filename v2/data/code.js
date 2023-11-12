@@ -2,8 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+// eslint-disable-next-line no-unused-vars
 const code = () => {
   const script = document.currentScript;
+
+  const config = {
+    maxAttempts: 10,
+    retryInMs: 1000
+  };
 
   // disable 60 framerate videos
   MediaSource.isTypeSupported = new Proxy(MediaSource.isTypeSupported, {
@@ -25,8 +31,6 @@ const code = () => {
   }
 
   async function youtubeHDListener(e) {
-    const maxAttempts = 10;
-    const retryInMs = 1000;
     const prefs = script.dataset;
     const player = youtubeHDListener.player;
     const log = (...args) => prefs.log === 'true' && console.log('YouTube HD::', ...args);
@@ -35,24 +39,18 @@ const code = () => {
     try {
       if (e === 1 && player) {
         const getAvailableQualities = async () => {
-          let qualities = player.getAvailableQualityLevels();
-          let attempts = 1;
-
-          while (qualities.length === 0) {
-            await sleep(retryInMs);
-
-            if (attempts >= maxAttempts) {
-              break;
+          for (let n = 0; n < config.maxAttempts; n += 1) {
+            const qualities = player.getAvailableQualityLevels();
+            if (qualities.length) {
+              return qualities;
             }
-            qualities = player.getAvailableQualityLevels();
-            attempts++;
+            await sleep(config.retryInMs);
           }
-
-          return qualities;
+          return [];
         };
 
         const setPlaybackQuality = async quality => {
-          for (let n = 0; n < maxAttempts; n += 1) {
+          for (let n = 0; n < config.maxAttempts; n += 1) {
             try {
               player.setPlaybackQuality(quality);
               player.setPlaybackQualityRange(quality, quality);
@@ -60,7 +58,7 @@ const code = () => {
               return;
             }
             catch {
-              await sleep(retryInMs);
+              await sleep(config.retryInMs);
             }
           }
           return log('Failed to set playback quality');

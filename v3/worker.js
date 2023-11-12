@@ -4,7 +4,7 @@
 
 'use strict';
 
-/* enable or disable the blocker */
+/* enable or disable */
 const activate = () => {
   if (activate.busy) {
     return;
