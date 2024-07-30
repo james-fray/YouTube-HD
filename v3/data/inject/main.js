@@ -103,9 +103,11 @@
           return log('Old Quality: ' + currentQuality + ', New Quality: ' + availableQualities[0]);
         }
 
-        if (prefs.higher === 'true' && availableQualities.indexOf(currentQuality) < availableQualities.indexOf(preferredQuality)) {
-          report(currentQuality);
-          return log('Current quality (' + currentQuality + ') is higher than the preferred quality (' + preferredQuality + ')');
+        if (prefs.higher === 'true') {
+          if (availableQualities.indexOf(currentQuality) < availableQualities.indexOf(preferredQuality)) {
+            report(currentQuality);
+            return log(`Current quality (${currentQuality}) is higher than the preferred ${preferredQuality} one`);
+          }
         }
 
         if (isPreferredQualityAvailable) {
