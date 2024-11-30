@@ -37,8 +37,13 @@
       return;
     }
 
+    try {
+      report(player.getPlaybackQuality());
+    }
+    catch (e) {}
+
     const prefs = port.dataset;
-    const log = (...args) => prefs.log === 'true' && console.log('YouTube HD::', ...args);
+    const log = (...args) => prefs.log === 'true' && console.log('[YouTube HD]', ...args);
     const report = q => port.dispatchEvent(new CustomEvent('quality', {
       detail: q
     }));
@@ -58,13 +63,20 @@
           return [];
         };
 
+        const availableQualities = await getAvailableQualities();
+
+        if (availableQualities.length === 0) {
+          return log('getAvailableQualityLevels returned empty array');
+        }
+
         const setPlaybackQuality = async quality => {
           for (let n = 0; n < config.maxAttempts; n += 1) {
             try {
               player.setPlaybackQuality(quality);
               player.setPlaybackQualityRange(quality, quality);
               hasQualityBeenSetAlready = true;
-              report(quality);
+              // make sure to read from the player
+              report(player.getPlaybackQuality());
               return;
             }
             catch {
@@ -73,12 +85,6 @@
           }
           return log('Failed to set playback quality');
         };
-
-        const availableQualities = await getAvailableQualities();
-
-        if (availableQualities.length === 0) {
-          return log('getAvailableQualityLevels returned empty array');
-        }
 
         const currentQuality = player.getPlaybackQuality();
         const preferredQuality = prefs.quality === 'highest' ? availableQualities[0] : prefs.quality;

@@ -1,7 +1,7 @@
 {
   "name": "Auto High Quality for YouTube™",
   "description": "Automatically change YouTube video quality to HD resolution or the highest available one",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "manifest_version": 3,
   "permissions": [
     "storage",
@@ -11,7 +11,8 @@
     "*://www.youtube.com/*"
   ],
   "background": {
-    "service_worker": "worker.js"
+    "service_worker": "worker.js",
+    "scripts": ["worker.js"]
   },
   "homepage_url": "https://webextension.org/listing/youtube-hd.html",
   "action": {
@@ -29,5 +30,11 @@
   },
   "commands": {
     "_execute_action": {}
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "jid0-RjdrEcWS3Ggt4xydeqVS8WQk1Lu@jetpack",
+      "strict_min_version": "128.0"
+    }
   }
 }

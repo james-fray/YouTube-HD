@@ -14,7 +14,7 @@ function restore() {
     higher: true,
     quality: 'highest',
     log: false,
-    nextHighest: false,
+    nextHighest: true,
     highFramerate: true
   }, prefs => {
     document.getElementById('enabled').checked = prefs.enabled;
