@@ -94,19 +94,35 @@
           return log('Quality already set');
         }
 
-        if (prefs.hd === 'true' && currentQuality.startsWith('hd')) {
+        if (prefs.hd === 'true' && preferredQuality.startsWith('hd')) {
           report(currentQuality);
-          return log('Selected quality is okay;', currentQuality);
+          return log('Selected quality is okay [1];', currentQuality);
         }
 
         if (currentQuality === preferredQuality) {
           report(currentQuality);
-          return log('Selected quality is okay;', currentQuality);
+          return log('Selected quality is okay [2];', currentQuality);
         }
 
         if (!isPreferredQualityAvailable && prefs.nextHighest === 'true') {
+          // find the closest quality to the user preferred one
+          const qualities = ['tiny', 'small', 'medium', 'large', 'hd720', 'hd1080', 'hd1440', 'hd2160'];
+          const n = qualities.indexOf(preferredQuality);
+          if (n !== -1) {
+            const pa = qualities.slice(n);
+            for (const q of [...availableQualities].reverse()) {
+              if (pa.includes(q)) {
+                if (q === currentQuality) {
+                  report(currentQuality);
+                  return log('Selected quality is okay [3];', currentQuality);
+                }
+                await setPlaybackQuality(q);
+                return log('Old Quality: ' + currentQuality + ', New Quality: ' + q, '[1]');
+              }
+            }
+          }
           await setPlaybackQuality(availableQualities[0]);
-          return log('Old Quality: ' + currentQuality + ', New Quality: ' + availableQualities[0]);
+          return log('Old Quality: ' + currentQuality + ', New Quality: ' + availableQualities[0], '[2]');
         }
 
         if (prefs.higher === 'true') {
@@ -118,7 +134,7 @@
 
         if (isPreferredQualityAvailable) {
           await setPlaybackQuality(preferredQuality);
-          return log('Old Quality: ' + currentQuality + ', New Quality: ' + preferredQuality);
+          return log('Old Quality: ' + currentQuality + ', New Quality: ' + preferredQuality, '[3]');
         }
 
         if (prefs.once === 'true') {
