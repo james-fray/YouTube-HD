@@ -49,6 +49,9 @@ port.addEventListener('quality', e => {
     break;
   }
 
+  if (isNaN(quality)) {
+    return;
+  }
   chrome.runtime.sendMessage({
     method: 'quality',
     quality

@@ -1,7 +1,7 @@
 {
   "name": "Auto High Quality for YouTube™",
   "description": "Automatically change YouTube video quality to HD resolution or the highest available one",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "manifest_version": 3,
   "permissions": [
     "storage",
@@ -9,6 +9,9 @@
   ],
   "host_permissions": [
     "*://www.youtube.com/*"
+  ],
+  "optional_host_permissions": [
+    "*://*/*"
   ],
   "background": {
     "service_worker": "worker.js",
