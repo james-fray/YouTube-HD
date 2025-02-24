@@ -47,6 +47,8 @@
 			<key>Allowed Domains</key>
 			<array>
 				<string>www.youtube.com</string>
+				<string>www.youtube-nocookie.com</string>
+				<string>youtu.be</string>
 			</array>
 			<key>Include Secure Pages</key>
 			<true/>

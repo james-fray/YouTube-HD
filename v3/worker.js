@@ -19,7 +19,11 @@ const activate = () => {
 
       if (prefs.enabled) {
         const props = {
-          'matches': ['*://www.youtube.com/*'],
+          'matches': [
+            '*://www.youtube.com/*',
+            "*://youtu.be/*",
+            "*://www.youtube-nocookie.com/*"
+          ],
           'allFrames': true,
           'runAt': 'document_start'
         };

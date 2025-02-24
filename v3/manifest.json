@@ -8,7 +8,9 @@
     "scripting"
   ],
   "host_permissions": [
-    "*://www.youtube.com/*"
+    "*://www.youtube.com/*",
+    "*://youtu.be/*",
+    "*://www.youtube-nocookie.com/*"
   ],
   "background": {
     "service_worker": "worker.js",
