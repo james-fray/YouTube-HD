@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => links());
 
 // hosts
 chrome.storage.local.get({
-  hosts: []
+  hosts: ['www.youtube-nocookie.com']
 }, prefs => {
   document.getElementById('hosts').value = prefs.hosts.join(', ');
 });

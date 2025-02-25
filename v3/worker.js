@@ -13,7 +13,7 @@ const activate = async () => {
 
   const prefs = await chrome.storage.local.get({
     enabled: true,
-    hosts: []
+    hosts: ['www.youtube-nocookie.com']
   });
 
   try {
@@ -26,7 +26,6 @@ const activate = async () => {
         'runAt': 'document_start'
       };
 
-      console.log(props);
       await chrome.scripting.registerContentScripts([{
         'id': 'chrome',
         'js': ['/data/inject/isolated.js'],
