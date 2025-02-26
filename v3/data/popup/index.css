@@ -70,6 +70,18 @@ a:visited {
   white-space: nowrap;
   align-items: center;
 }
+.three {
+  display: grid;
+  grid-template-columns: min-content 1fr min-content;
+  grid-gap: 5px;
+  white-space: nowrap;
+  align-items: center;
+}
+#hosts {
+  height: 100%;
+  box-sizing: border-box;
+  padding-inline: 5px;
+}
 #quality {
   justify-self: end;
 }

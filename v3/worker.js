@@ -5,50 +5,62 @@
 'use strict';
 
 /* enable or disable */
-const activate = () => {
+const activate = async () => {
   if (activate.busy) {
     return;
   }
   activate.busy = true;
 
-  chrome.storage.local.get({
-    enabled: true
-  }, async prefs => {
-    try {
-      await chrome.scripting.unregisterContentScripts();
-
-      if (prefs.enabled) {
-        const props = {
-          'matches': [
-            '*://www.youtube.com/*',
-            "*://youtu.be/*",
-            "*://www.youtube-nocookie.com/*"
-          ],
-          'allFrames': true,
-          'runAt': 'document_start'
-        };
-        await chrome.scripting.registerContentScripts([{
-          'id': 'chrome',
-          'js': ['/data/inject/isolated.js'],
-          'world': 'ISOLATED',
-          ...props
-        }, {
-          'id': 'page',
-          'js': ['/data/inject/main.js'],
-          'world': 'MAIN',
-          ...props
-        }]);
-      }
-    }
-    catch (e) {
-      console.error('Registration Failed', e);
-    }
-    activate.busy = false;
+  const prefs = await chrome.storage.local.get({
+    enabled: true,
+    hosts: ['www.youtube-nocookie.com']
   });
+
+  try {
+    await chrome.scripting.unregisterContentScripts();
+
+    if (prefs.enabled) {
+      const props = {
+        'matches': ['*://www.youtube.com/*', "*://www.youtube-nocookie.com/*", ...prefs.hosts.map(h => `*://${h}/*`)],
+        'allFrames': true,
+        'runAt': 'document_start'
+      };
+
+      await chrome.scripting.registerContentScripts([{
+        'id': 'chrome',
+        'js': ['/data/inject/isolated.js'],
+        'world': 'ISOLATED',
+        ...props
+      }, {
+        'id': 'page',
+        'js': ['/data/inject/main.js'],
+        'world': 'MAIN',
+        ...props
+      }]);
+    }
+  }
+  catch (e) {
+    console.error('Registration Failed', e);
+
+    chrome.action.setBadgeText({
+      text: 'E'
+    });
+    chrome.action.setTitle({
+      title: e.message
+    });
+  }
+  activate.busy = false;
 };
 chrome.runtime.onStartup.addListener(activate);
 chrome.runtime.onInstalled.addListener(activate);
-chrome.storage.onChanged.addListener(ps => ps.enabled && activate());
+chrome.storage.onChanged.addListener(ps => {
+  if ('enabled' in ps) {
+    activate();
+  }
+  else if ('hosts' in ps) {
+    activate();
+  }
+});
 
 /* messaging */
 chrome.runtime.onMessage.addListener((request, sender) => {

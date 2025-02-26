@@ -92,3 +92,29 @@ const links = window.links = (d = document) => {
   }
 };
 document.addEventListener('DOMContentLoaded', () => links());
+
+// hosts
+chrome.storage.local.get({
+  hosts: ['www.youtube-nocookie.com']
+}, prefs => {
+  document.getElementById('hosts').value = prefs.hosts.join(', ');
+});
+
+document.getElementById('hosts-container').onsubmit = e => {
+  e.preventDefault();
+
+  const hosts = document.getElementById('hosts').value.split(/\s*,\s*/).filter((s, n, l) => {
+    return s && l.indexOf(s) === n;
+  });
+
+  chrome.permissions.request({
+    origins: hosts.map(h => `*://${h}/*`)
+  }, granted => {
+    if (granted) {
+      chrome.storage.local.set({hosts});
+    }
+  }).catch(e => {
+    console.error(e);
+    alert(e.message);
+  });
+};

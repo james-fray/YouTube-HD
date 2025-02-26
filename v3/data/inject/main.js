@@ -33,20 +33,23 @@
   });
 
   const youtubeHDListener = async (port, player, e) => {
-    if (port.skipped) {
-      return;
-    }
+    const prefs = port.dataset;
+    const log = (...args) => prefs.log === 'true' && console.log('[YouTube HD]', ...args);
+    // const report = q => port.dispatchEvent(new CustomEvent('quality', {
+    //   detail: q
+    // }));
+    // report is not very stable
+    const report = () => {};
 
     try {
       report(player.getPlaybackQuality());
     }
     catch (e) {}
 
-    const prefs = port.dataset;
-    const log = (...args) => prefs.log === 'true' && console.log('[YouTube HD]', ...args);
-    const report = q => port.dispatchEvent(new CustomEvent('quality', {
-      detail: q
-    }));
+    if (port.skipped) {
+      return;
+    }
+
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
     let hasQualityBeenSetAlready = false;
 
@@ -69,7 +72,12 @@
           return log('getAvailableQualityLevels returned empty array');
         }
 
-        const setPlaybackQuality = async quality => {
+        const setPlaybackQuality = async (quality, current) => {
+          if (quality === current) {
+            report(quality);
+            log('Selected quality is okay [3];', quality);
+            return;
+          }
           for (let n = 0; n < config.maxAttempts; n += 1) {
             try {
               player.setPlaybackQuality(quality);
@@ -86,6 +94,12 @@
           return log('Failed to set playback quality');
         };
 
+        // place before returns
+        if (prefs.once === 'true') {
+          port.skipped = true;
+          log('Skip until next navigation');
+        }
+
         const currentQuality = player.getPlaybackQuality();
         const preferredQuality = prefs.quality === 'highest' ? availableQualities[0] : prefs.quality;
         const isPreferredQualityAvailable = availableQualities.includes(preferredQuality);
@@ -94,7 +108,7 @@
           return log('Quality already set');
         }
 
-        if (prefs.hd === 'true' && preferredQuality.startsWith('hd')) {
+        if (prefs.hd === 'true' && preferredQuality.startsWith('hd') && currentQuality.startsWith('hd')) {
           report(currentQuality);
           return log('Selected quality is okay [1];', currentQuality);
         }
@@ -112,16 +126,12 @@
             const pa = qualities.slice(n);
             for (const q of [...availableQualities].reverse()) {
               if (pa.includes(q)) {
-                if (q === currentQuality) {
-                  report(currentQuality);
-                  return log('Selected quality is okay [3];', currentQuality);
-                }
-                await setPlaybackQuality(q);
+                await setPlaybackQuality(q, currentQuality);
                 return log('Old Quality: ' + currentQuality + ', New Quality: ' + q, '[1]');
               }
             }
           }
-          await setPlaybackQuality(availableQualities[0]);
+          await setPlaybackQuality(availableQualities[0], currentQuality);
           return log('Old Quality: ' + currentQuality + ', New Quality: ' + availableQualities[0], '[2]');
         }
 
@@ -133,14 +143,8 @@
         }
 
         if (isPreferredQualityAvailable) {
-          await setPlaybackQuality(preferredQuality);
+          await setPlaybackQuality(preferredQuality, currentQuality);
           return log('Old Quality: ' + currentQuality + ', New Quality: ' + preferredQuality, '[3]');
-        }
-
-        if (prefs.once === 'true') {
-          player.removeEventListener('onStateChange', 'youtubeHDListener');
-          window.youtubeHDListener = () => {};
-          log('Removing Listener');
         }
       }
     }
