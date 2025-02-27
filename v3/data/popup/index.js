@@ -54,7 +54,12 @@ function save() {
 }
 
 document.addEventListener('DOMContentLoaded', restore);
-document.addEventListener('change', save);
+document.addEventListener('change', e => {
+  if (e.target.id === 'hosts') {
+    return;
+  }
+  save();
+});
 
 document.getElementById('reset').addEventListener('click', e => {
   if (e.detail === 1) {
@@ -100,21 +105,27 @@ chrome.storage.local.get({
   document.getElementById('hosts').value = prefs.hosts.join(', ');
 });
 
-document.getElementById('hosts-container').onsubmit = e => {
+document.getElementById('hosts-container').onsubmit = async e => {
   e.preventDefault();
 
   const hosts = document.getElementById('hosts').value.split(/\s*,\s*/).filter((s, n, l) => {
     return s && l.indexOf(s) === n;
   });
 
-  chrome.permissions.request({
-    origins: hosts.map(h => `*://${h}/*`)
-  }, granted => {
+  try {
+    const granted = await chrome.permissions.request({
+      origins: hosts.map(h => `*://${h}/*`)
+    });
     if (granted) {
-      chrome.storage.local.set({hosts});
+      await chrome.storage.local.set({hosts});
+      e.submitter.value = 'Done';
+      setTimeout(() => {
+        e.submitter.value = 'Apply';
+      }, 750);
     }
-  }).catch(e => {
+  }
+  catch (e) {
     console.error(e);
     alert(e.message);
-  });
+  }
 };
