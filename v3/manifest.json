@@ -1,7 +1,7 @@
 {
   "name": "Auto High Quality for YouTube™",
   "description": "Automatically change YouTube video quality to HD resolution or the highest available one",
-  "version": "0.4.9",
+  "version": "0.5.0",
   "manifest_version": 3,
   "permissions": [
     "storage",

@@ -157,7 +157,7 @@
     if (observe.ready) {
       return;
     }
-    const p = [...document.querySelectorAll('.html5-video-player')].sort((a, b) => {
+    const p = [...document.querySelectorAll('.html5-video-player')].filter(a => a.offsetHeight).sort((a, b) => {
       return b.offsetHeight - a.offsetHeight;
     }).shift();
 
