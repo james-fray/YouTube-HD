@@ -8,8 +8,8 @@ const prefs = {
   hd: true,
   once: false,
   higher: true,
-  quality: -1,
-  log: false,
+  quality: 'highest',
+  log: true,
   nextHighest: true,
   highFramerate: true
 };
@@ -52,6 +52,7 @@ port.addEventListener('quality', e => {
   if (isNaN(quality)) {
     return;
   }
+
   chrome.runtime.sendMessage({
     method: 'quality',
     quality
