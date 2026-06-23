@@ -1,17 +1,9 @@
 :root {
   color-scheme: dark light;
 
-  --fg: #4d5156;
-  --bg: #fff;
-  --links: #1870d8;
-}
-
-@media (prefers-color-scheme: dark) {
-  body {
-    --fg: #bab9ba;
-    --bg: #1f1e21;
-    --links: #99c9fe;
-  }
+  --fg: light-dark(#4d5156, #bab9ba);
+  --bg: light-dark(#fff, #282828);
+  --links: light-dark(#1870d8, #99c9fe);
 }
 
 body {
@@ -21,18 +13,23 @@ body {
   color: var(--fg);
   width: 600px;
 }
+select,
 button,
 input[type=submit],
 input[type=button] {
-  height: 28px;
+  padding: 5px;
   color: #444;
   background-image: linear-gradient(rgb(237, 237, 237), rgb(237, 237, 237) 38%, rgb(222, 222, 222));
   box-shadow: rgba(0, 0, 0, 0.08) 0 1px 0, rgba(255, 255, 255, 0.75) 0 1px 2px inset;
   text-shadow: rgb(240, 240, 240) 0 1px 0;
   font-size: inherit;
+  white-space: nowrap;
+  min-width: 12ch;
 }
+select,
 button,
 textarea,
+input[type=text],
 input[type=submit],
 input[type=button] {
   border: solid 1px rgba(0, 0, 0, 0.25);
@@ -41,9 +38,7 @@ input[type=button]:disabled {
   opacity: 0.5;
 }
 select {
-  height: 28px;
-  background: transparent;
-  outline: none;
+  field-sizing: content;
 }
 textarea {
   width: 100%;
@@ -56,7 +51,13 @@ a:visited {
   color: var(--links);
   text-decoration: none;
 }
-
+footer {
+  display: grid;
+  grid-template-columns: min-content min-content 1fr min-content;
+  grid-gap: 5px;
+  margin-block-start: 5px;
+  align-items: center;
+}
 .tbl {
   display: grid;
   grid-template-columns: min-content 1fr;
@@ -66,7 +67,6 @@ a:visited {
 .tbl label {
   align-self: center;
 }
-
 .two {
   display: grid;
   grid-template-columns: min-content 1fr;

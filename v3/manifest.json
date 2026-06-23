@@ -1,7 +1,7 @@
 {
   "name": "Auto High Quality for YouTube™",
   "description": "Automatically change YouTube video quality to HD resolution or the highest available one",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "manifest_version": 3,
   "permissions": [
     "storage",
@@ -38,7 +38,10 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "jid0-RjdrEcWS3Ggt4xydeqVS8WQk1Lu@jetpack",
-      "strict_min_version": "128.0"
+      "strict_min_version": "148.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
     }
   }
 }
