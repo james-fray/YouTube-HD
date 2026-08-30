@@ -9,6 +9,7 @@ const prefs = {
   once: false,
   higher: true,
   quality: 'highest',
+  hiddenQuality: 'same',
   log: true,
   nextHighest: true,
   highFramerate: true

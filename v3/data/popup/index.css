@@ -86,6 +86,7 @@ footer {
   box-sizing: border-box;
   padding-inline: 5px;
 }
-#quality {
+#quality,
+#hidden-quality {
   justify-self: end;
 }
