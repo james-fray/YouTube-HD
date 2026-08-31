@@ -53,9 +53,26 @@
       try {
         player.setPlaybackQuality(quality);
         player.setPlaybackQualityRange(quality, quality);
+
+        // auto quality do not seem to have valid API
+        if (quality === 'auto') {
+          const button = document.querySelector('.ytp-settings-button');
+          button?.click();
+
+          const quality = [...document.querySelectorAll('.ytp-menuitem')]
+            .find(el => /Quality/i.test(el.textContent));
+          quality?.click();
+
+          const auto = [...document.querySelectorAll('.ytp-menuitem')]
+            .find(el => /^Auto\b/i.test(el.textContent));
+
+          if (auto) {
+            auto?.click();
+          }
+        }
         return true;
       }
-      catch {
+      catch (e) {
         await sleep(config.retryInMs);
       }
     }
@@ -64,6 +81,9 @@
 
   // find the closest available quality to the requested one
   const resolveQuality = (quality, availableQualities, prefs) => {
+    if (quality === 'auto') {
+      return 'auto';
+    }
     if (quality === 'highest') {
       return availableQualities[0];
     }
@@ -124,10 +144,23 @@
         if (document.hidden === true && prefs.hiddenQuality && prefs.hiddenQuality !== 'same') {
           const hiddenQuality = resolveQuality(prefs.hiddenQuality, availableQualities, prefs);
           if (hiddenQuality) {
-            await setPlaybackQuality(player, hiddenQuality, currentQuality);
-            return log('Tab is hidden. Old Quality: ' + currentQuality + ', New Quality: ' + hiddenQuality);
+            if (hiddenQuality !== currentQuality) {
+              await setPlaybackQuality(player, hiddenQuality, currentQuality);
+              return log('Tab is hidden. Old Quality: ' + currentQuality + ', New Quality: ' + hiddenQuality);
+            }
+            return log('Selected quality is okay;', hiddenQuality);
           }
           return log('Hidden quality is not available;', prefs.hiddenQuality);
+        }
+
+        // the player decides when the preferred quality is auto
+        if (prefs.quality === 'auto') {
+          report(currentQuality);
+          if (currentQuality !== 'auto') {
+            await setPlaybackQuality(player, 'auto', currentQuality);
+            return log('Preferred quality is auto. Old Quality: ' + currentQuality + ', New Quality: auto');
+          }
+          return log('Preferred quality is auto; letting the player decide');
         }
 
         const preferredQuality = prefs.quality === 'highest' ? availableQualities[0] : prefs.quality;
@@ -188,12 +221,19 @@
     o('getPlayerState' in p ? p.getPlayerState() : 1);
   };
 
-  // switch quality when the tab visibility changes
-  const visibilityListener = async () => {
+  // apply the requested quality based on the tab visibility state
+  const applyQuality = async fromUser => {
     const prefs = port.dataset;
     const player = observe.player;
-    if (!player || !prefs.hiddenQuality || prefs.hiddenQuality === 'same') {
+    if (!player) {
       return;
+    }
+
+    // without a dedicated hidden quality, only popup updates are applied on a visible tab
+    if (document.hidden === true || fromUser !== true) {
+      if (!prefs.hiddenQuality || prefs.hiddenQuality === 'same') {
+        return;
+      }
     }
 
     const log = (...args) => prefs.log === 'true' && console.log('[YouTube HD]', ...args);
@@ -230,5 +270,10 @@
   // embedded YouTube
   addEventListener('play', () => observe(), true);
   // hidden-tab quality
-  document.addEventListener('visibilitychange', visibilityListener);
+  document.addEventListener('visibilitychange', () => applyQuality());
+  // apply as soon as the user updates the quality from the popup
+  new MutationObserver(() => applyQuality(true)).observe(port, {
+    attributeFilter: ['data-quality', 'data-hidden-quality'],
+    attributes: true
+  });
 }
